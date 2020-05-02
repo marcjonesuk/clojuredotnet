@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Lisp.Compiler.Tests
@@ -7,17 +8,17 @@ namespace Lisp.Compiler.Tests
 	[TestClass]
 	public class Equality_Tests
 	{
-		public void Run_And_Compare(string code, object expected)
+		public async Task Run_And_Compare(string code, object expected)
 		{
 			if (!(expected is Type t)) {
-				var result = new Compiler().Compile(code).Invoke();
+				var result = await new Compiler().Compile(code).Invoke();
 				Assert.AreEqual(expected, result, code);	
 				return;
 			}
 
 			try
 			{
-				var result = new Compiler().Compile(code).Invoke();
+				var result = await new Compiler().Compile(code).Invoke();
 				Assert.AreEqual(expected, result, code);
 			}
 			catch (Exception ex)
@@ -55,7 +56,7 @@ namespace Lisp.Compiler.Tests
 		[DataRow("(= [[1] #{1 {:a 1 :b 3}} nil] [[1] #{{:a 1 :b 2} 1} nil])", false)]
 		[DataRow("(= [[] #{1 2} {:a {:b 4}}] `([] #{1 2} {:a {:b 4}}))", true)]
 		[DataRow("(= [[] #{1 2} {:a {:b 3}}] `([] #{1 2} {:a {:b 4}}))", false)]
-		public void Equality_Tests_1(string code, object expected) => Run_And_Compare(code, expected);
+		public Task Equality_Tests_1(string code, object expected) => Run_And_Compare(code, expected);
 
 		[DataTestMethod]
 		[DataRow("true", "true", true)]

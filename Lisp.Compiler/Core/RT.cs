@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
@@ -48,10 +50,10 @@ namespace Lisp.Compiler
 			return args[0].Eval(newArgs);
 		}
 
-		public static object Map(object[] args)
+		public static async Task<object> Map(object[] args)
 		{
-			var target = args[1].AsSeq();
-			return target.Select(item => args[0].Eval(new object[] { item }));
+			var target = args[1].AsSeqOLD();
+			return target.Select(item => await args[0].Eval(new object[] { item }));
 		}
 
 		public static object Def(object symbol, object value)
@@ -84,10 +86,10 @@ namespace Lisp.Compiler
 
 		public static object Inc(dynamic x) => ++x;
 		public static object Dec(dynamic x) => --x;
-		
+
 		public static object Gt(dynamic x, dynamic y) => x > y;
 		public static object Lt(dynamic x, dynamic y) => x < y;
-		
+
 		public static object Quot(object x, object y) => (int)x / (int)y;
 		public static object Mod(object x, object y) => (int)x % (int)y;
 
@@ -120,27 +122,34 @@ namespace Lisp.Compiler
 		public static object Hash(object x) => Hash_(x);
 		public static object Equiv(object x, object y) => Equiv_(x, y);
 
-		public static int Hash_(object x) {
+		public static int Hash_(object x)
+		{
 			if (x == null) return 0;
 			if (x is KeyValuePair<object, object> kvp)
 				return HashCode.Combine(Hash_(kvp.Key), Hash_(kvp.Value));
-			if (x is ISet<object> xset) {
+			if (x is ISet<object> xset)
+			{
 				var hashcode = 0;
-				foreach(var item in xset) {
+				foreach (var item in xset)
+				{
 					hashcode = hashcode ^ Hash_(item);
 				}
 				return hashcode;
 			}
-			if (x is IDictionary<object, object> xdict) {
+			if (x is IDictionary<object, object> xdict)
+			{
 				var hashcode = 0;
-				foreach(var item in xdict) {
+				foreach (var item in xdict)
+				{
 					hashcode = hashcode ^ Hash_(item);
 				}
 				return hashcode;
 			}
-			if (x is IEnumerable<object> xe) {
+			if (x is IEnumerable<object> xe)
+			{
 				var hashcode = 0;
-				foreach(var item in xe) {
+				foreach (var item in xe)
+				{
 					hashcode = HashCode.Combine(hashcode, Hash_(item));
 				}
 				return hashcode;
@@ -198,5 +207,38 @@ namespace Lisp.Compiler
 			// If all else fails use default Equals 
 			return x.Equals(y);
 		}
+
+		public static object TestRange(object asyncEnumerable, object func)
+		{
+			Task.Run(async () =>
+			{
+				await foreach (int item in asyncEnumerable.As<IAsyncEnumerable<object>>())
+				{
+					await func.Eval(new object[] { item });
+				}
+			});
+			Thread.Sleep(5000);
+			return null;
+		}
+
+		public static async IAsyncEnumerable<object> Interval(object interval)
+		{
+			var i = 0;
+			while (true)
+			{
+				await Task.Delay(interval.As<int>());
+				yield return ++i;
+			}
+		}
+
+		static async IAsyncEnumerable<int> RangeAsync(int start, int count)
+		{
+			for (int i = 0; i < count; i++)
+			{
+				await Task.Delay(i * 100);
+				yield return start + i;
+			}
+		}
+
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
@@ -43,7 +44,7 @@ namespace Lisp.Compiler
 			}
 		}
 
-		public object Invoke(object[] args)
+		public async Task<object> Invoke(object[] args)
 		{
 			// throw new Exception("Null state");
 
@@ -53,20 +54,23 @@ namespace Lisp.Compiler
 					State.Current = ExpressionState;
 
 				if (Items == null || Items.Count == 0) return ImmutableArray<object>.Empty;
-				var fn = Items[0].Eval(null);
+				var fn = await Items[0].Eval(null);
 				if (Items[0] is Symbol && State.Root.Keywords.Contains(((Symbol)Items[0]).Name))
 				{
 					// Pass arguments un-evaled
-					return fn.Eval(_args);
+					return await fn.Eval(_args);
 				}
 				else
 				{
 					// Evaluate arguments and invoke
 					if (_args == null)
-						return fn.Eval();
+						return await fn.Eval();
 
-					var evaled = _args.Select(i => i.Eval()).ToArray();
-					return fn.Eval(evaled);
+					object[] evaled = new object[_args.Length];
+					for (var i = 0; i < _args.Length; i++)
+						evaled[i] = await _args[i].Eval();
+
+					return await fn.Eval(evaled);
 				}
 			}
 			catch (Exception e)

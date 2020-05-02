@@ -1,17 +1,18 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
 	public sealed class Function : IFn
 	{
-		public Func<object[], object> fn;
+		public Func<object[], Task<object>> fn;
 
 		public Function()
 		{
 
 		}
 
-		public Function(Func<object[], object> fn, string name = null)
+		public Function(Func<object[], Task<object>> fn, string name = null)
 		{
 			this.fn = fn;
 			Name = name;
@@ -24,11 +25,11 @@ namespace Lisp.Compiler
 			return fn(null);
 		}
 
-		public object Invoke(object[] args)
+		public async Task<object> Invoke(object[] args)
 		{
 			try
 			{
-				return fn(args);
+				return await fn(args);
 			}
 			catch (Exception e)
 			{

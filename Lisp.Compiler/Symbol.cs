@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler 
 {
@@ -20,15 +21,15 @@ namespace Lisp.Compiler
 
 		public string Name { get; }
 
-		public object Invoke(object[] args)
+		public Task<object> Invoke(object[] args)
 		{
 			if (!IsInterop)
-				return State.Current[Name];
+				return Task.FromResult<object>(State.Current[Name]);
 
 			if (_interop == null) 
 				_interop = InteropCompiler.Create(Name);
 
-			return _interop;
+			return Task.FromResult<object>(_interop);
 		}
 		
 		public override string ToString() => (IsVariadic ? "& " : "") + Name;

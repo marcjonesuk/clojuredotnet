@@ -7,24 +7,28 @@ namespace Lisp.Compiler
 {
 	public class InteropCompiler
 	{
-		public static object Create(MethodInfo mi)
+		public static IFn Create(MethodInfo mi)
 		{
 			var parameters = mi.GetParameters();
 
-			if (parameters.Length == 1 && parameters[0].ParameterType == typeof(object[]))
-				return (InteropDelegate)Delegate.CreateDelegate(typeof(InteropDelegate), null, mi);
+			object d = null;
 
-			return parameters.Length switch
-			{
-				0 => (InteropDelegate0Arg)Delegate.CreateDelegate(typeof(InteropDelegate0Arg), null, mi),
-				1 => (InteropDelegate1Arg)Delegate.CreateDelegate(typeof(InteropDelegate1Arg), null, mi),
-				2 => (InteropDelegate2Arg)Delegate.CreateDelegate(typeof(InteropDelegate2Arg), null, mi),
-				3 => (InteropDelegate3Arg)Delegate.CreateDelegate(typeof(InteropDelegate3Arg), null, mi),
-				_ => (InteropDelegate)Delegate.CreateDelegate(typeof(InteropDelegate), null, mi),
-			};
+			if (parameters.Length == 1 && parameters[0].ParameterType == typeof(object[]))
+				d = (InteropDelegate)Delegate.CreateDelegate(typeof(InteropDelegate), null, mi);
+			else
+				d = parameters.Length switch
+				{
+					0 => (InteropDelegate0Arg)Delegate.CreateDelegate(typeof(InteropDelegate0Arg), null, mi),
+					1 => (InteropDelegate1Arg)Delegate.CreateDelegate(typeof(InteropDelegate1Arg), null, mi),
+					2 => (InteropDelegate2Arg)Delegate.CreateDelegate(typeof(InteropDelegate2Arg), null, mi),
+					3 => (InteropDelegate3Arg)Delegate.CreateDelegate(typeof(InteropDelegate3Arg), null, mi),
+					_ => (InteropDelegate)Delegate.CreateDelegate(typeof(InteropDelegate), null, mi),
+				};
+
+			return new Function(async args => await d.Eval(args), "Interop_" + mi.Name);
 		}
 
-		public static object Create(string name)
+		public static IFn Create(string name)
 		{
 			var typeName = name.Split("/")[0].Replace("RT", "Lisp.Compiler.RT").Replace("Seq", "Lisp.Compiler.Seq");
 			var type = Type.GetType(typeName);

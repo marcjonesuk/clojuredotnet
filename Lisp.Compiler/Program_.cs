@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
@@ -14,7 +15,7 @@ namespace Lisp.Compiler
 
 		public override string ToString() => string.Join(' ', this.Select(i => i.ToString()));
 
-		public object Invoke(object[] args)
+		public async Task<object> Invoke(object[] args)
 		{
 			object current = null;
 			try
@@ -22,7 +23,7 @@ namespace Lisp.Compiler
 				object result = null;
 				foreach (object item in this) {
 					current = item;
-					result = item.Eval();
+					result = await item.Eval();
 				}
 				return result;
 			}

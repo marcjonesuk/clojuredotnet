@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
@@ -70,20 +71,20 @@ namespace Lisp.Compiler
 			}
 		}
 
-		public object Invoke(object[] args)
+		public async Task<object> Invoke(object[] args)
 		{
 			if (args[0] is IList<object> bindings)
 			{
 				if (bindings[0] is IList<object> l)
 				{
 					var b = new List<object>();
-					Destructure(b, l, (IEnumerable<object>)bindings[1].Eval());
+					Destructure(b, l, (IEnumerable<object>) await bindings[1].Eval());
 					bindings = b;
 				}
 				for (var i = 0; i < bindings.Count; i += 2)
 				{
 					var symbol = ((Symbol)bindings[i]).Name;
-					var value = bindings[i + 1].Eval();
+					var value = await bindings[i + 1].Eval();
 					State.Current[symbol] = value;
 				}
 			}
@@ -92,7 +93,7 @@ namespace Lisp.Compiler
 				return null;
 
 			for (var i = 1; i < args.Length; i++)
-				result = args[i].Eval();
+				result = await args[i].Eval();
 			return result;
 		}
 	}

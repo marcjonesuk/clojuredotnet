@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
@@ -32,7 +33,7 @@ namespace Lisp.Compiler
 			return !args.Any(a => (a.GetType() == typeof(ImmutableArray<object>)));
 		}
 
-		public object Invoke(object[] args)
+		public async Task<object> Invoke(object[] args)
 		{
 			var symbol = (args[0] as Symbol).Name;
 			var isMultiArityFunction = IsMultiArityFunction(args);

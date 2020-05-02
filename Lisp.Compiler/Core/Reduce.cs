@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
 	public class Reduce : IFn
 	{
-		public object Invoke(object[] args)
+		public async Task<object> Invoke(object[] args)
 		{
 			object value = null;
 			var function = args[0];
@@ -32,14 +33,14 @@ namespace Lisp.Compiler
 					value = item;
 					continue;
 				}
-				value = function.Eval(new object[] { value, item });
+				value = await function.Eval(new object[] { value, item });
 			}
 			if (!hasItems)
 			{
 				if (args.Length == 3)
-					return function.Eval(new object[] { value });
+					return await function.Eval(new object[] { value });
 				else
-					return function.Eval();
+					return await function.Eval();
 			}
 			return value;
 		}

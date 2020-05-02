@@ -1,15 +1,16 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
 	public class Def : IFn
 	{
-		public object Invoke(object[] args)
+		public async Task<object> Invoke(object[] args)
 		{
 			var symbol = ((Symbol)args[0]).Name;
-			var value = args[1].Eval();
+			var value = await args[1].Eval();
 			State.Root[symbol] = value;
-			return null;
+			return Task.FromResult<object>(null);
 		}
 	}
 }

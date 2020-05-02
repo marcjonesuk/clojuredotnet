@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
@@ -31,7 +32,7 @@ namespace Lisp.Compiler
 		{
 			var items = expression.Select(item => Compile(item, quoted)).ToList();
 			if (quoted)
-				return new Function(_ => items.Select(item => item.Eval()).ToImmutableList(), items.Stringify());
+				return new Function(async _ => items.Select(async item => await item.Eval()).ToImmutableList(), items.Stringify());
 			else
 				return new SymbolicExpression(items);
 		}
@@ -51,7 +52,7 @@ namespace Lisp.Compiler
 				{
 					ImmutableArray<object> l => CompileArray(l, quoted),
 					IList<object> l => CompileList(l, quoted),
-					Symbol sym => new Function(_ => sym, $"symbol({sym.Name})"),
+					Symbol sym => new Function(_ => Task.FromResult<object>(sym), $"symbol({sym.Name})"),
 					Quoted q => Compile(q.Value, true),
 					Unquoted q => Compile(q.Value, false),
 					_ => o

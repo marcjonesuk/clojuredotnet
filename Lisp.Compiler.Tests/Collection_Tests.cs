@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -8,10 +9,10 @@ namespace Lisp.Compiler.Tests
 	[TestClass]
 	public class Collection_Tests
 	{
-		public void Run_And_Compare(string code, object expected)
+		public async Task Run_And_Compare(string code, object expected)
 		{
 			if (!(expected is Type t)) {
-				var result = new Compiler().Compile(code).Invoke();
+				var result = await new Compiler().Compile(code).Invoke();
 				if (expected is string)
 					result = result.Stringify();
 				Assert.AreEqual(expected, result, code);	
@@ -20,7 +21,7 @@ namespace Lisp.Compiler.Tests
 
 			try
 			{
-				var result = new Compiler().Compile(code).Invoke();
+				var result = await new Compiler().Compile(code).Invoke();
 				if (expected is string)
 					result = result.Stringify();
 				Assert.AreEqual(expected, result, code);

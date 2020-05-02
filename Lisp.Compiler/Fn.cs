@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
@@ -94,14 +95,14 @@ namespace Lisp.Compiler
 			}
 		}
 
-		public object Invoke(object[] args)
+		public async Task<object> Invoke(object[] args)
 		{
 			ValidateArity(args.Length);
 			BindArgumentValues(args);
 			object result = null;
 			while (true)
 			{
-				result = body.Eval();
+				result = await body.Eval();
 				if (result is RecurSignal recur)
 					BindArgumentValues(recur.Args);
 				else

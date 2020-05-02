@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
@@ -19,16 +20,16 @@ namespace Lisp.Compiler
 		// Invokes the multi arity function. 
 		// If we find an exact arity match, use it. If not, use the variadic implementation if it exists,
 		// allowing it to validate any argument constraints
-		public object Invoke(object[] args)
+		public async Task<object> Invoke(object[] args)
 		{
 			if (implementations.TryGetValue(args.Length, out var impl))
 			{
-				return impl.Eval(args);
+				return await impl.Eval(args);
 			}
 			else
 			{
 				if (variadicImplementation != null)
-					return variadicImplementation.Eval(args);
+					return await variadicImplementation.Eval(args);
 				throw new ArityException(args.Length);
 			}
 		}

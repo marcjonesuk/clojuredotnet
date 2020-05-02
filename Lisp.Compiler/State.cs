@@ -32,9 +32,9 @@ namespace Lisp.Compiler
 			this["nil"] = null;
 			this["true"] = true;
 			this["false"] = false;
-			this["defmacro"] = new DefMacro();
+			// this["defmacro"] = new DefMacro();
 
-			this["list"] = new Function(args => new List<object>((IEnumerable<object>)args).ToImmutableList());
+			// this["list"] = new Function(args => new List<object>((IEnumerable<object>)args).ToImmutableList());
 
 			this["if"] = new If();
 			this["defn"] = new Defn();
@@ -97,15 +97,18 @@ namespace Lisp.Compiler
 			this["repeat"] = InteropCompiler.Create("Seq/Repeat");
 			this["range"] = InteropCompiler.Create("Seq/Range");
 
-			new Compiler().Compile("(def + (fn [& args] (reduce RT/Add args)))").Invoke();
-			// this["+"] = new Function(args => RT.Add(args[0], args[1]));
-			new Compiler().Compile("(def * (fn [& args] (reduce RT/Multiply args)))").Invoke();
-			new Compiler().Compile("(defn concat ([coll] (Seq/Seq_ coll)) ([& args] (reduce Seq/Concat args)))").Invoke();
+			// new Compiler().Compile("(def + (fn [& args] (reduce RT/Add args)))").Invoke();
+			this["+"] = new Function(async args => RT.Add(args[0], args[1]));
+			// new Compiler().Compile("(def * (fn [& args] (reduce RT/Multiply args)))").Invoke();
+			// new Compiler().Compile("(defn concat ([coll] (Seq/Seq_ coll)) ([& args] (reduce Seq/Concat args)))").Invoke();
 
-			this["print"] = new Function(args => { Console.WriteLine(args[0].Stringify()); return null; });
-			this["read-line"] = new Function(args => Console.ReadLine());
-			this["loop"] = new Loop();
-			this["recur"] = new Recur();
+			// this["print"] = new Function(args => { Console.WriteLine(args[0].Stringify()); return null; });
+			// // this["read-line"] = new Function(args => Console.ReadLine());
+			// this["loop"] = new Loop();
+			// this["recur"] = new Recur();
+			
+			// this["async"] = new Function(args => RT.TestRange(args[0], args[1]));
+			// this["interval"] = new Function(args => RT.Interval(args[0]));
 		}
 
 		public object this[string symbol]

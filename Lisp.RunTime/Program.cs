@@ -4,18 +4,19 @@ using Lisp.Compiler;
 
 namespace Lisp.RunTime
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-			Console.WriteLine("±±±± MARC LANG ±±±±");
-			try {
+	class Program
+	{
+		static void Main(string[] args)
+		{
+			try
+			{
 				var code = File.ReadAllText(args[0]);
 				var result = new Lisp.Compiler.Compiler().Compile(code).Invoke();
 			}
-			catch(Exception e){
+			catch (Exception e)
+			{
 				Console.WriteLine(e);
 			}
-        }
-    }
+		}
+	}
 }

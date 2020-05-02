@@ -1,11 +1,10 @@
+using System.Threading.Tasks;
+
 namespace Lisp.Compiler 
 {
 	public interface IFn
 	{
-		object Invoke(object[] args);
-		object Invoke() => Invoke(null);
-		object ApplyTo(object[] args) {
-			return null;
-		}
+		Task<object> Invoke(object[] args);
+		Task<object> Invoke() => Invoke(null);
 	}
 } 

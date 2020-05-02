@@ -1,22 +1,23 @@
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lisp.Compiler
 {
 	public class If : IFn
 	{
-		public object Invoke(object[] args)
+		public async Task<object> Invoke(object[] args)
 		{
 			return args.Length switch
 			{
-				2 => RT.IsTruthy(args[0].Eval()) switch
+				2 => RT.IsTruthy(await args[0].Eval()) switch
 				{
-					true => args[1].Eval(),
+					true => await args[1].Eval(),
 					false => null,
 				},
-				3 => RT.IsTruthy(args[0].Eval()) switch
+				3 => RT.IsTruthy(await args[0].Eval()) switch
 				{
-					true => args[1].Eval(),
-					false => args[2].Eval(),
+					true => await args[1].Eval(),
+					false => await args[2].Eval(),
 				},
 				_ => throw new ArityException(args.Length)
 			};
