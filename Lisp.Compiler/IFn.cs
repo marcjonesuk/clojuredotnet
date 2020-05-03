@@ -4,8 +4,5 @@ namespace Lisp.Compiler
 	{
 		object Invoke(object[] args);
 		object Invoke() => Invoke(null);
-		object ApplyTo(object[] args) {
-			return null;
-		}
 	}
 } 

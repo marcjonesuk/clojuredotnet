@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
 
-namespace Lisp.Compiler 
+namespace Lisp.Compiler
 {
 	public class Symbol : IFn, IStringify
 	{

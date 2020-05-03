@@ -13,8 +13,6 @@ namespace Lisp.Compiler
 		private IList<object> Args { get; }
 		public Environment Env { get; set; }
 
-		private IFn fn = null;
-
 		private object[] _args;
 
 		public SymbolicExpression(IList<object> items)
@@ -23,8 +21,6 @@ namespace Lisp.Compiler
 
 			if (items != null && items.Count > 1)
 				_args = items.Skip(1).ToArray();
-
-			fn = (IFn)Items[0];
 		}
 
 		public override string ToString() => "(" + string.Join(' ', Items.Select(item => item.Stringify())) + ")";
@@ -58,7 +54,7 @@ namespace Lisp.Compiler
 				var fn = Items[0].Eval(null);
 				if (Items[0] is Symbol && Environment.Root.Keywords.Contains(((Symbol)Items[0]).Name))
 				{
-					// Pass arguments un-evaled
+					// Pass arguments without evaluation
 					return fn.Eval(_args);
 				}
 				else

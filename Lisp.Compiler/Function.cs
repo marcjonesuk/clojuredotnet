@@ -2,21 +2,15 @@ using System;
 
 namespace Lisp.Compiler
 {
-	public sealed class Function : IFn
+	public class Function : IFn
 	{
+		public string Name { get; }
 		public Func<object[], object> fn;
 
 		public Function(Func<object[], object> fn, string name = null)
 		{
 			this.fn = fn;
 			Name = name;
-		}
-
-		public string Name { get; }
-
-		public object Invoke()
-		{
-			return fn(null);
 		}
 
 		public object Invoke(object[] args)

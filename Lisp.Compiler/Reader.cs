@@ -7,8 +7,6 @@ namespace Lisp.Compiler
 {
 	public class Reader
 	{
-		public IFn Compile(string code) => new Compiler().Compile(Read(new Tokeniser().Tokenise(code)));
-
 		public string Load(string file) => File.ReadAllText(file).Replace("'", "`").Replace("\"", "'");
 
 		public IEnumerable<object> Read(string code) => Read(new Tokeniser().Tokenise(code));

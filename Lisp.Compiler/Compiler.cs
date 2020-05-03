@@ -36,20 +36,6 @@ namespace Lisp.Compiler
 				return new SymbolicExpression(items);
 		}
 
-		private object CompileArray(ImmutableArray<object> array, bool quoted)
-		{
-			// var items = array.Select(item => Compile(item, quoted)).ToList();
-			// return new Function(_ => items.Select(item => item.Eval()).ToImmutableArray(), items.Stringify());
-
-			var items = array.Select(item => Compile(item, quoted)).ToImmutableArray();
-            return items;
-		}
-
-		private object CompileEnumerable(IEnumerable<object> enumerable, bool quoted)
-		{
-			return enumerable.Select(i => Compile(i, quoted));
-		}
-
 		// todo: add interop quoting?
 		// todo: need to add hashmap etc here now?
 		private object Compile(object o, bool quoted)
@@ -58,7 +44,6 @@ namespace Lisp.Compiler
 			{
 				return o switch
 				{
-					ImmutableArray<object> l => CompileArray(l, quoted),
 					IList<object> l => CompileList(l, quoted),
 					Symbol sym => new Function(_ => sym, $"symbol({sym.Name})"),
 					Quoted q => Compile(q.Value, true),
@@ -70,9 +55,7 @@ namespace Lisp.Compiler
 			{
 				return o switch
 				{
-					// ImmutableArray<object> l => CompileArray(l, quoted),
 					IList<object> l => CompileList(l, quoted),
-					// IEnumerable<object> e => CompileEnumerable(e, quoted),
 					Symbol sym => sym,
 					Quoted q => Compile(q.Value, true),
 					Unquoted q => Compile(q.Value, false),

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Lisp.Compiler
 {
-	public class RecurSignal
+	public struct RecurSignal
 	{
 		public RecurSignal(object[] args)
 		{

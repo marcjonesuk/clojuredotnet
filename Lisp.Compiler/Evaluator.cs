@@ -7,13 +7,12 @@ namespace Lisp.Compiler
 {
 	public static class Evaluator
 	{
-		public static object[] EmptyArray = new object[0];
-
 		public static object Eval(this object o, object[] args = null)
 		{
 			// Primitives
 			if (o == null) return null;
 			else if (o is int) return o;
+			else if (o is double) return o;
 			else if (o is string) return o;
 			else if (o is bool) return o;
 
