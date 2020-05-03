@@ -6,10 +6,6 @@ namespace Lisp.Compiler
 	{
 		public Func<object[], object> fn;
 
-		public Function()
-		{
-		}
-
 		public Function(Func<object[], object> fn, string name = null)
 		{
 			this.fn = fn;

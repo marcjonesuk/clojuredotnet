@@ -70,17 +70,12 @@ namespace Lisp.Compiler
 			{
 				return o switch
 				{
-					ImmutableArray<object> l => CompileArray(l, quoted),
+					// ImmutableArray<object> l => CompileArray(l, quoted),
 					IList<object> l => CompileList(l, quoted),
 					// IEnumerable<object> e => CompileEnumerable(e, quoted),
 					Symbol sym => sym,
 					Quoted q => Compile(q.Value, true),
 					Unquoted q => Compile(q.Value, false),
-					int i => new Function(_ => i, i.ToString()),
-					double d => new Function(_ => d, d.ToString()),
-					string str => new Function(_ => str, str),
-					bool b => new Function(_ => b, b.ToString()),
-					null => new Function(_ => null, "null"),
 					_ => o
 				};
 			}
