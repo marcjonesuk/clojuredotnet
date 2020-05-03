@@ -2,60 +2,60 @@ using System;
 
 namespace Lisp.Compiler
 {
-	public class Symbol : IFn, IStringify
-	{
-		private object _interop;
-		public bool IsInterop {get; private set;}
-		
-		public Symbol(string name) : this(name, false) {}
-		
-		public Symbol(string name, bool isVariadic)
-		{
-			IsVariadic = isVariadic;
-			Name = name;
+    public class Symbol : IFn, IStringify
+    {
+        private object _interop;
+        public bool IsInterop { get; private set; }
 
-			if (name.Contains("/")) IsInterop = true;
-		}
+        public Symbol(string name) : this(name, false) { }
 
-		public string Name { get; }
+        public Symbol(string name, bool isVariadic)
+        {
+            IsVariadic = isVariadic;
+            Name = name;
 
-		public object Invoke(object[] args)
-		{
-			if (!IsInterop)
-				return Environment.Current[Name];
+            if (name.Contains("/")) IsInterop = true;
+        }
 
-			if (_interop == null) 
-				_interop = InteropCompiler.Create(Name);
+        public string Name { get; }
 
-			return _interop;
-		}
-		
-		public override string ToString() => (IsVariadic ? "& " : "") + Name;
-		public bool IsVariadic { get; }
+        public object Invoke(object[] args)
+        {
+            if (!IsInterop)
+                return Environment.Current[Name];
 
-		public static Symbol Read(TokenEnumerator en)
-		{
-			var symbol = en.Current;
-			en.MoveNext();
-			return new Symbol(symbol, false);
-		}
+            if (_interop == null)
+                _interop = InteropCompiler.Create(Name);
 
-		public override bool Equals(object obj)
-		{
-			return obj is Symbol symbol &&
-				   Name == symbol.Name;
-		}
+            return _interop;
+        }
 
-		public override int GetHashCode()
-		{
-			return HashCode.Combine(Name);
-		}
+        public override string ToString() => (IsVariadic ? "& " : "") + Name;
+        public bool IsVariadic { get; }
 
-		public static Symbol Create(string v)
-		{
-			return new Symbol(v);
-		}
+        public static Symbol Read(TokenEnumerator en)
+        {
+            var symbol = en.Current;
+            en.MoveNext();
+            return new Symbol(symbol, false);
+        }
 
-		public string Stringify(bool quoteStrings) => ToString();
-	}
+        public override bool Equals(object obj)
+        {
+            return obj is Symbol symbol &&
+                   Name == symbol.Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name);
+        }
+
+        public static Symbol Create(string v)
+        {
+            return new Symbol(v);
+        }
+
+        public string Stringify(bool quoteStrings) => ToString();
+    }
 }

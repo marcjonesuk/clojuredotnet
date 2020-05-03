@@ -1,8 +1,8 @@
-namespace Lisp.Compiler 
+namespace Lisp.Compiler
 {
-	public interface IFn
-	{
-		object Invoke(object[] args);
-		object Invoke() => Invoke(null);
-	}
-} 
+    public interface IFn
+    {
+        object Invoke(object[] args);
+        object Invoke() => Invoke(null);
+    }
+}

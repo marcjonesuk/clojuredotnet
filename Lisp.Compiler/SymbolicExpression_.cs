@@ -12,7 +12,7 @@ namespace Lisp.Compiler
 		public string Source { get; }
 		private IList<object> Args { get; }
 		public Environment Env { get; set; }
-
+		private bool _isSpecialForm;
 		private object[] _args;
 
 		public SymbolicExpression(IList<object> items)
@@ -21,6 +21,8 @@ namespace Lisp.Compiler
 
 			if (items != null && items.Count > 1)
 				_args = items.Skip(1).ToArray();
+
+			_isSpecialForm = (Items[0] is Symbol && Environment.Root.SpecialForms.Contains(((Symbol)Items[0]).Name));
 		}
 
 		public override string ToString() => "(" + string.Join(' ', Items.Select(item => item.Stringify())) + ")";
@@ -52,7 +54,7 @@ namespace Lisp.Compiler
 
 				if (Items == null || Items.Count == 0) return ImmutableArray<object>.Empty;
 				var fn = Items[0].Eval(null);
-				if (Items[0] is Symbol && Environment.Root.Keywords.Contains(((Symbol)Items[0]).Name))
+				if (_isSpecialForm)
 				{
 					// Pass arguments without evaluation
 					return fn.Eval(_args);
