@@ -57,7 +57,7 @@ namespace Lisp.Compiler
 		public static object Def(object symbol, object value)
 		{
 			var sym = (Symbol)symbol;
-			State.Root[sym.Name] = value.Eval();
+			Environment.Root[sym.Name] = value.Eval();
 			return symbol;
 		}
 

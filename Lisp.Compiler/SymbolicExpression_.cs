@@ -11,7 +11,9 @@ namespace Lisp.Compiler
 		public IList<object> Items { get; }
 		public string Source { get; }
 		private IList<object> Args { get; }
-		public State ExpressionState { get; set; }
+		public Environment Env { get; set; }
+
+		private IFn fn = null;
 
 		private object[] _args;
 
@@ -21,6 +23,8 @@ namespace Lisp.Compiler
 
 			if (items != null && items.Count > 1)
 				_args = items.Skip(1).ToArray();
+
+			fn = (IFn)Items[0];
 		}
 
 		public override string ToString() => "(" + string.Join(' ', Items.Select(item => item.Stringify())) + ")";
@@ -32,9 +36,9 @@ namespace Lisp.Compiler
 			{
 				_parent = value;
 				if (_parent == null)
-					ExpressionState = new State(null);
+					Env = new Environment(null);
 				else
-					ExpressionState = new State(_parent.ExpressionState);
+					Env = new Environment(_parent.Env);
 
 				foreach (var i in Items.Where(i => i is SymbolicExpression sym).Cast<SymbolicExpression>())
 				{
@@ -45,27 +49,28 @@ namespace Lisp.Compiler
 
 		public object Invoke(object[] args)
 		{
-			// throw new Exception("Null state");
-
 			try
 			{
-				if (ExpressionState != null)
-					State.Current = ExpressionState;
+				if (Env != null)
+					Environment.Current = Env;
 
 				if (Items == null || Items.Count == 0) return ImmutableArray<object>.Empty;
 				var fn = Items[0].Eval(null);
-				if (Items[0] is Symbol && State.Root.Keywords.Contains(((Symbol)Items[0]).Name))
+				if (Items[0] is Symbol && Environment.Root.Keywords.Contains(((Symbol)Items[0]).Name))
 				{
 					// Pass arguments un-evaled
 					return fn.Eval(_args);
 				}
 				else
 				{
-					// Evaluate arguments and invoke
 					if (_args == null)
 						return fn.Eval();
 
-					var evaled = _args.Select(i => i.Eval()).ToArray();
+					// Evaluate arguments and invoke
+					var evaled = new object[_args.Length];
+					for (var i = 0; i < _args.Length; i++)
+						evaled[i] = _args[i].Eval();
+
 					return fn.Eval(evaled);
 				}
 			}
@@ -75,10 +80,10 @@ namespace Lisp.Compiler
 			}
 			finally
 			{
-				if (ExpressionState != null)
+				if (Env != null)
 				{
-					State.Current = ExpressionState.ParentState;
-					ExpressionState.Clear();
+					Environment.Current = Env.Parent;
+					Env.Clear();
 				}
 			}
 		}

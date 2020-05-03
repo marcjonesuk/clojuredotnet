@@ -16,11 +16,11 @@ namespace Lisp.Compiler
 			{
 				if (i == argumentNames.Length - 1 && argumentNames[i][0..1] == "&")
 				{
-					State.Current[argumentNames[i][1..]] = args[i..];
+					Environment.Current[argumentNames[i][1..]] = args[i..];
 				}
 				else
 				{
-					State.Current[argumentNames[i]] = args[i];
+					Environment.Current[argumentNames[i]] = args[i];
 				}
 			}
 		}

@@ -8,7 +8,7 @@ namespace Lisp.Compiler
 		{
 			var symbol = ((Symbol)args[0]).Name;
 			var value = args[1].Eval();
-			State.Root[symbol] = value;
+			Environment.Root[symbol] = value;
 			return null;
 		}
 	}

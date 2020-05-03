@@ -4,19 +4,18 @@ using System.Collections.Immutable;
 
 namespace Lisp.Compiler
 {
-	public class State
+	public class Environment
 	{
-		public State ParentState { get; set; }
+		public Environment Parent { get; set; }
 		public HashSet<string> Keywords { get; set; }
 		public Dictionary<string, object> Bindings { get; set; }
 		public Dictionary<string, IFn> Macros { get; set; }
-		public static State Current = null;
-		public static State Root = new State();
+		public static Environment Current = null;
+		public static Environment Root = new Environment();
 
-		// Root state constructor
-		public State()
+		public Environment()
 		{
-			ParentState = null;
+			Parent = null;
 			Bindings = new Dictionary<string, object>();
 			Macros = new Dictionary<string, IFn>();
 			Keywords = new HashSet<string>();
@@ -40,17 +39,17 @@ namespace Lisp.Compiler
 			this["defn"] = new Defn();
 			this["fn"] = InteropCompiler.Create("RT/Fn");
 			this["let"] = new Let();
-			this["def"] = InteropCompiler.Create("RT/Def");
-			this["str"] = InteropCompiler.Create("RT/Str");
+			this["def"] = new Function(args => RT.Def(args[0], args[1]));
+			this["str"] = new Function(args => RT.Str(args)); // InteropCompiler.Create("RT/Str");
 			this["apply"] = InteropCompiler.Create("RT/Apply");
 			this["map"] = InteropCompiler.Create("RT/Map");
 			this["reduce"] = new Reduce();
 		}
 
-		public State(State parent)
+		public Environment(Environment parent)
 		{
 			if (parent == null) parent = Root;
-			ParentState = parent;
+			Parent = parent;
 			Bindings = new Dictionary<string, object>();
 		}
 
@@ -97,10 +96,11 @@ namespace Lisp.Compiler
 			this["repeat"] = InteropCompiler.Create("Seq/Repeat");
 			this["range"] = InteropCompiler.Create("Seq/Range");
 
-			new Compiler().Compile("(def + (fn [& args] (reduce RT/Add args)))").Invoke();
-			// this["+"] = new Function(args => RT.Add(args[0], args[1]));
-			new Compiler().Compile("(def * (fn [& args] (reduce RT/Multiply args)))").Invoke();
-			new Compiler().Compile("(defn concat ([coll] (Seq/Seq_ coll)) ([& args] (reduce Seq/Concat args)))").Invoke();
+			// new Compiler().Compile("(def + (fn [& args] (reduce RT/Add args)))").Invoke();
+			// new Compiler().Compile("(def + (fn [x y] (RT/Add x y)))").Invoke();
+			this["+"] = new Function(args => RT.Add(args[0], args[1]));
+			// new Compiler().Compile("(def * (fn [& args] (reduce RT/Multiply args)))").Invoke();
+			// new Compiler().Compile("(defn concat ([coll] (Seq/Seq_ coll)) ([& args] (reduce Seq/Concat args)))").Invoke();
 
 			this["print"] = new Function(args => { Console.WriteLine(args[0].Stringify()); return null; });
 			this["read-line"] = new Function(args => Console.ReadLine());
@@ -114,9 +114,9 @@ namespace Lisp.Compiler
 			{
 				var s = this;
 				if (Bindings.ContainsKey(symbol)) return Bindings[symbol];
-				while (s.ParentState != null)
+				while (s.Parent != null)
 				{
-					s = s.ParentState;
+					s = s.Parent;
 					if (s.Bindings.ContainsKey(symbol)) return s.Bindings[symbol];
 				}
 				throw new System.Exception($"Unable to resolve symbol: {symbol} in this context");
@@ -131,9 +131,9 @@ namespace Lisp.Compiler
 		{
 			var s = this;
 			if (Bindings.ContainsKey(symbol)) return true;
-			while (s.ParentState != null)
+			while (s.Parent != null)
 			{
-				s = s.ParentState;
+				s = s.Parent;
 				if (s.Bindings.ContainsKey(symbol)) return true;
 			}
 			return false;

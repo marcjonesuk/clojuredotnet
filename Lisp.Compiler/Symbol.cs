@@ -23,7 +23,7 @@ namespace Lisp.Compiler
 		public object Invoke(object[] args)
 		{
 			if (!IsInterop)
-				return State.Current[Name];
+				return Environment.Current[Name];
 
 			if (_interop == null) 
 				_interop = InteropCompiler.Create(Name);

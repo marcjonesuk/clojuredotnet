@@ -11,17 +11,44 @@ namespace Lisp.Compiler
 		{
 			var parameters = mi.GetParameters();
 
-			if (parameters.Length == 1 && parameters[0].ParameterType == typeof(object[]))
-				return (InteropDelegate)Delegate.CreateDelegate(typeof(InteropDelegate), null, mi);
+			// if (parameters.Length == 1 && parameters[0].ParameterType == typeof(object[]))
+			// 	return (InteropDelegate)Delegate.CreateDelegate(typeof(InteropDelegate), null, mi);
 
-			return parameters.Length switch
+			// return parameters.Length switch
+			// {
+			// 	0 => (InteropDelegate0Arg)Delegate.CreateDelegate(typeof(InteropDelegate0Arg), null, mi),
+			// 	1 => (InteropDelegate1Arg)Delegate.CreateDelegate(typeof(InteropDelegate1Arg), null, mi),
+			// 	2 => (InteropDelegate2Arg)Delegate.CreateDelegate(typeof(InteropDelegate2Arg), null, mi),
+			// 	3 => (InteropDelegate3Arg)Delegate.CreateDelegate(typeof(InteropDelegate3Arg), null, mi),
+			// 	_ => (InteropDelegate)Delegate.CreateDelegate(typeof(InteropDelegate), null, mi),
+			// };
+
+			if (parameters.Length == 1 && parameters[0].ParameterType == typeof(object[]))
 			{
-				0 => (InteropDelegate0Arg)Delegate.CreateDelegate(typeof(InteropDelegate0Arg), null, mi),
-				1 => (InteropDelegate1Arg)Delegate.CreateDelegate(typeof(InteropDelegate1Arg), null, mi),
-				2 => (InteropDelegate2Arg)Delegate.CreateDelegate(typeof(InteropDelegate2Arg), null, mi),
-				3 => (InteropDelegate3Arg)Delegate.CreateDelegate(typeof(InteropDelegate3Arg), null, mi),
-				_ => (InteropDelegate)Delegate.CreateDelegate(typeof(InteropDelegate), null, mi),
-			};
+				return new Function(args =>
+				{
+					try
+					{
+						return mi.Invoke(null, new object[] { args });
+					}
+					catch (Exception e)
+					{
+						throw e.Wrap(null);
+					}
+				});
+			}
+
+			return new Function(args =>
+			{
+				try
+				{
+					return mi.Invoke(null, args);
+				}
+				catch (Exception e)
+				{
+					throw e.Wrap(null);
+				}
+			});
 		}
 
 		public static object Create(string name)

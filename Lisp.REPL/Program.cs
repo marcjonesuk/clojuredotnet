@@ -32,7 +32,7 @@ namespace Lisp.REPL
 			// Prompts the user for input
 			while ((s = le.Edit("> ", "")) != null)
 			{
-				if (s== "exit") Environment.Exit(0);
+				if (s== "exit") System.Environment.Exit(0);
 				var compiler = new Lisp.Compiler.Compiler();
 				try {
 					if (s != string.Empty)

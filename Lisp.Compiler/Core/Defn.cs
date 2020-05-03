@@ -42,7 +42,7 @@ namespace Lisp.Compiler
 			{
 				var body = (IFn)args[bodyIndex];
 				var fn = new Fn(va, body);
-				State.Root[symbol] = fn;
+				Environment.Root[symbol] = fn;
 				return symbol;
 			}
 			// Multi arity function
@@ -60,7 +60,7 @@ namespace Lisp.Compiler
 					else
 						implementations[argBodyPair[0].As<IList<object>>().Count] = fn;
 				}
-				State.Root[symbol] = new MultiArityFunction(implementations, variadic);
+				Environment.Root[symbol] = new MultiArityFunction(implementations, variadic);
 				return null;
 			}
 		}

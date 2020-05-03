@@ -19,7 +19,7 @@ namespace Lisp.Compiler
 				return x;
 			});
 
-			State.Current.Macros.Add(symbol.Name, fn);
+			Environment.Current.Macros.Add(symbol.Name, fn);
 			return symbol;
 		}
 	}

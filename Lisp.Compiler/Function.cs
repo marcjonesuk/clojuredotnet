@@ -8,7 +8,6 @@ namespace Lisp.Compiler
 
 		public Function()
 		{
-
 		}
 
 		public Function(Func<object[], object> fn, string name = null)

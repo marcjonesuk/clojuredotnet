@@ -38,7 +38,7 @@ namespace Lisp.Compiler
 			{
 				var key = (initialArguments[i] as Symbol).Name;
 				var value = initialArguments[i + 1].Eval();
-				State.Current[key] = value;
+				Environment.Current[key] = value;
 			}
 
 			object result = null;
@@ -53,7 +53,7 @@ namespace Lisp.Compiler
 					{
 						// Update bindings
 						var key = (initialArguments[i] as Symbol).Name;
-						State.Current[key] = newArgs[i / 2];
+						Environment.Current[key] = newArgs[i / 2];
 					}
 				}
 				else

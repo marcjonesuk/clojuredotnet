@@ -34,7 +34,7 @@ namespace Lisp.Compiler
 			body.DeepFind(o => o is Symbol sym
 				&& !sym.IsInterop
 				&& !locals.Contains(sym)
-				&& !State.Current.Contains(sym.Name),
+				&& !Environment.Current.Contains(sym.Name),
 				o => throw new System.Exception($"Use of undeclared Var {((Symbol)o).Name}"));
 		}
 
@@ -43,16 +43,16 @@ namespace Lisp.Compiler
 			var locals = this.arguments.ToHashSet();
 			if (body is SymbolicExpression symbolicExpression)
 			{
-				var state = symbolicExpression.ExpressionState;
+				var state = symbolicExpression.Env;
 				body.DeepFind(o => o is Symbol sym
 					&& !sym.IsInterop
 					&& !locals.Contains(sym)
-					&& !State.Root.Contains(sym.Name),
+					&& !Environment.Root.Contains(sym.Name),
 					o =>
 					{
 						var name = ((Symbol)o).Name;
-						if (State.Current.Contains(name))
-							state[name] = State.Current[name];
+						if (Environment.Current.Contains(name))
+							state[name] = Environment.Current[name];
 					}
 				);
 			}
@@ -60,14 +60,14 @@ namespace Lisp.Compiler
 			{
 				if (body is Symbol sym && !sym.IsInterop
 					&& !locals.Contains(sym)
-					&& !State.Root.Contains(sym.Name))
-					body = State.Current[sym.Name];
+					&& !Environment.Root.Contains(sym.Name))
+					body = Environment.Current[sym.Name];
 			}
 		}
 
 		private void BindArgumentValues(object[] args)
 		{
-			var state = (body is SymbolicExpression symbolicExpression) ? symbolicExpression.ExpressionState : State.Current;
+			var state = (body is SymbolicExpression symbolicExpression) ? symbolicExpression.Env : Environment.Current;
 			object[] values = new object[arguments.Length];
 			for (var i = 0; i < arguments.Length; i++)
 			{

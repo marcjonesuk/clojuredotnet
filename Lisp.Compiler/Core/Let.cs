@@ -84,7 +84,7 @@ namespace Lisp.Compiler
 				{
 					var symbol = ((Symbol)bindings[i]).Name;
 					var value = bindings[i + 1].Eval();
-					State.Current[symbol] = value;
+					Environment.Current[symbol] = value;
 				}
 			}
 			object result = null;

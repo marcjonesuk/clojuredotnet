@@ -163,13 +163,14 @@ namespace Lisp.Compiler.Tests
 		public void If_Tests(string code, object expected) => Run_And_Compare(code, expected);
 
 		[DataTestMethod]
+		[DataRow("(str [1 2 3])", "[1 2 3]")]
 		[DataRow("(apply if [true false true])", false)]
-		[DataRow("(apply if [true true false])", true)]
-		[DataRow("(apply RT/str ['a' 'b' 'c'])", "abc")]
-		[DataRow("(apply RT/str)", typeof(ArityException))]
-		[DataRow("(apply)", typeof(ArityException))]
-		[DataRow("(apply RT/str 1)", typeof(InvalidCastException))]
-		[DataRow("(apply true [1])", typeof(InvalidOperationException))]
+		// [DataRow("(apply if [true true false])", true)]
+		// [DataRow("(apply RT/str ['a' 'b' 'c'])", "abc")]
+		// [DataRow("(apply RT/str)", typeof(ArityException))]
+		// [DataRow("(apply)", typeof(ArityException))]
+		// [DataRow("(apply RT/str 1)", typeof(InvalidCastException))]
+		// [DataRow("(apply true [1])", typeof(InvalidOperationException))]
 		public void Apply_Tests(string code, object expected) => Run_And_Compare(code, expected);
 
 		[DataTestMethod]
