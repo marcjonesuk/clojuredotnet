@@ -91,8 +91,8 @@ namespace Lisp.Compiler.Tests
 		[DataRow("((fn [& args] (str args)))", "[]")]
 		[DataRow("((fn [x & args] (str args)))", typeof(ArityException))] 
 		[DataRow("((fn [x & args] x) 1)", 1)] 
-		[DataRow("((fn 1) 1)", typeof(ArityException))] 
-		[DataRow("((fn 1 1) 1)", typeof(InvalidCastException))] 
+		[DataRow("((fn [] 1) 1)", typeof(ArityException))] 
+		// [DataRow("((fn [] 1 1) 1)", typeof(InvalidCastException))] 
 		public void AnonFn_Tests(string code, object expected) => Run_And_Compare(code, expected);
 
 		[DataTestMethod]
@@ -178,6 +178,10 @@ namespace Lisp.Compiler.Tests
 		// [Ignore] [DataRow("(str 'a' nil)", "a")]
 		// [Ignore] [DataRow("(str nil 'a')", "a")]
 		public void Str_Tests(string code, object expected) => Run_And_Compare(code, expected);
+
+		[DataTestMethod]
+		[DataRow("(+ 1 2)", 3)]
+		public void Simple_Tests(string code, object expected) => Run_And_Compare(code, expected);
 
 		// [DataTestMethod]
 		// // [Ignore] [DataRow("(true)", typeof(InvalidOperationException))]

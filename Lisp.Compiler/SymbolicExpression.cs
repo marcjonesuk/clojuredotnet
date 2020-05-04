@@ -9,7 +9,6 @@ namespace Lisp.Compiler
 	public class SymbolicExpression : IEnumerable<object>, IFn
 	{
 		public IList<object> Items { get; }
-		public string Source { get; }
 		private IList<object> Args { get; }
 		public Environment Env { get; set; }
 		private bool _isSpecialForm;
@@ -22,7 +21,7 @@ namespace Lisp.Compiler
 			if (items != null && items.Count > 1)
 				_args = items.Skip(1).ToArray();
 
-			_isSpecialForm = (Items[0] is Symbol && Environment.Root.SpecialForms.Contains(((Symbol)Items[0]).Name));
+			_isSpecialForm = (Items != null && Items.Count > 0 && Items[0] is Symbol && Environment.SpecialForms.Contains(((Symbol)Items[0]).Name));
 		}
 
 		public override string ToString() => "(" + string.Join(' ', Items.Select(item => item.Stringify())) + ")";
@@ -34,9 +33,9 @@ namespace Lisp.Compiler
 			{
 				_parent = value;
 				if (_parent == null)
-					Env = new Environment(null);
+					Env = new Environment(this, null);
 				else
-					Env = new Environment(_parent.Env);
+					Env = new Environment(this, _parent.Env);
 
 				foreach (var i in Items.Where(i => i is SymbolicExpression sym).Cast<SymbolicExpression>())
 				{
@@ -45,6 +44,7 @@ namespace Lisp.Compiler
 			}
 		}
 
+		private IFn cached = null;
 		public object Invoke(object[] args)
 		{
 			try
@@ -53,10 +53,12 @@ namespace Lisp.Compiler
 					Environment.Current = Env;
 
 				if (Items == null || Items.Count == 0) return ImmutableArray<object>.Empty;
+
 				var fn = Items[0].Eval(null);
+
 				if (_isSpecialForm)
 				{
-					// Pass arguments without evaluation
+					// Special forms get arguments without evaluation
 					return fn.Eval(_args);
 				}
 				else

@@ -4,88 +4,113 @@ using System.Linq;
 
 namespace Lisp.Compiler
 {
+	public class Tokeniser
+	{
+		public TokenEnumerator Tokenise(string code)
+		{
+			var lineNumber = 1;
+			code = code.Replace("\t", " ");
 
-    // TODO
-    // Support strings with tabs etc.
+			var output = new List<Token>();
+			var done = false;
+			var pos = 0;
+			var priorLinePos = 0;
+			var buffer = string.Empty;
 
-    public class Tokeniser
-    {
-        public TokenEnumerator Tokenise(string code)
-        {
-            code = code.Replace("\t", "").Replace("\n", "").Replace("\r", "").Trim();
+			while (!done)
+			{
+				var current = code[pos];
 
-            var output = new List<string>();
-            var done = false;
-            var pos = 0;
-            var buffer = string.Empty;
+				switch (current)
+				{
+					case ';':
+						while (code[pos] != '\n') pos++;
+						priorLinePos = pos + 1;
+						lineNumber++;
+						break;
+					case '\n':
+					case '[':
+					case ']':
+					case '(':
+					case '{':
+					case '}':
+					case ')':
+					case '#':
+					case '~':
+					case ',':
+					case ':':
+					case '`':
+					case ' ':
+						if (buffer != string.Empty)
+						{
+							output.Add(new Token(buffer, lineNumber, pos - priorLinePos));
+							buffer = string.Empty;
+						}
 
-            while (!done)
-            {
-                var current = code[pos];
+						if (current == '\n')
+						{
+							output.Add(new Token(" ", lineNumber, pos - priorLinePos));
+							priorLinePos = pos + 1;
+							lineNumber++;
+						}
+						else if (current != ',')
+						{
+							output.Add(new Token(current.ToString(), lineNumber, pos - priorLinePos));
+						}
 
-                switch (current)
-                {
-                    case '[':
-                    case ']':
-                    case '(':
-                    case '{':
-                    case '}':
-                    case ')':
-                    case '#':
-                    case '~':
-                    case ',':
-                    case ':':
-                    case '`':
-                    case ' ':
-                        if (buffer != string.Empty)
-                        {
-                            output.Add(buffer);
-                            buffer = string.Empty;
-                        }
+						break;
+					case '\'':
+						var s = string.Empty;
+						pos++;
+						while (code[pos] != '\'')
+						{
 
-                        // Filter out adjacent white space
-                        if (current == ' ' && output.Last() == " ")
-                            break;
+							s += code[pos];
+							pos++;
+						}
+						output.Add(new Token("'", lineNumber, pos - priorLinePos));
+						output.Add(new Token(s, lineNumber, pos - priorLinePos));
+						output.Add(new Token("'", lineNumber, pos - priorLinePos));
+						break;
+					// case '.':
+					// 	if (output.Last() == "(")
+					// 		output.Add(".");
+					// 	else 
+					// 		buffer += '.';
+					// 	break;
+					default:
+						buffer += current;
+						break;
+				}
+				pos++;
+				if (pos == code.Length)
+				{
+					if (buffer != string.Empty)
+					{
+						output.Add(new Token(buffer, lineNumber, pos - priorLinePos - buffer.Length + 1));
+						buffer = string.Empty;
+					}
+					done = true;
+				}
+			}
 
-                        if (current != ',')
-                            output.Add(current.ToString());
+			// trim leading and ending whitespace
+			var result = new List<Token>();
 
-                        break;
-                    case '\'':
-                        var s = string.Empty;
-                        pos++;
-                        while (code[pos] != '\'')
-                        {
+			int b = 0;
+			for (b = 0; b < output.Count; b++)
+			{
+				if (output[b].Value != " ") break;
+			}
 
-                            s += code[pos];
-                            pos++;
-                        }
-                        output.Add("'");
-                        output.Add(s);
-                        output.Add("'");
-                        break;
-                    // case '.':
-                    // 	if (output.Last() == "(")
-                    // 		output.Add(".");
-                    // 	else 
-                    // 		buffer += '.';
-                    // 	break;
-                    default:
-                        buffer += current;
-                        break;
-                }
-                pos++;
-                if (pos == code.Length)
-                {
-                    if (buffer != string.Empty)
-                    {
-                        output.Add(buffer);
-                        buffer = string.Empty;
-                    }
-                    done = true;
-                }
-            }
-            return new TokenEnumerator(output.ToArray());
-        }
-    }
+			int e = output.Count - 1;
+			for (e = output.Count - 1; e > 0; e--)
+			{
+				if (output[e].Value != " ") break;
+			}
+			e++;
+
+			return new TokenEnumerator(output.ToArray()[b..e]);
+		}
+	}
 }

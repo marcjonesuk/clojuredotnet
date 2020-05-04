@@ -156,19 +156,60 @@ namespace Lisp.Compiler.Tests
 		}
 
 		[DataTestMethod]
-		[DataRow("'hello, world'")]
-		[DataRow("'hello, world ;this is not a comment'")]
+		// [DataRow("'hello, world'")]
+		// [DataRow("'hello, world ;this is not a comment'")]
+		[DataRow("(deftest 'Adding two numbers together' (let [result (add 1 2) (= 3 result)))")]
 		public void String_Tests(string s)
 		{
-			var read = (string)(new Reader().Read(s).First());
+			var result = (new Reader().Read(s));
+			var read = (string)result.First();
 			Assert.AreEqual(s[1..^1], read);
 		}
-		
+
 		[DataTestMethod]
 		[DataRow("(#(+ 1 %) 5)", "((fn [%] (+ 1 %)) 5)")]
 		public void Anonymous_Function_Tests(string code, string result)
 		{
 			var read = new Reader().Read(code).First();
+			Assert.AreEqual(result, read.Stringify());
+		}
+
+		[DataTestMethod]
+		[DataRow("s", 0, "s", 1, 1)]
+		[DataRow("symbol", 0, "symbol", 1, 1)]
+		[DataRow("\nsymbol", 0, "symbol", 2, 1)]
+		[DataRow("x\n\n\ns", 4, "s", 4, 1)]
+		[DataRow(";c\ns", 0, "s", 2, 1)]
+		[DataRow("\n(s)\n", 1, "s", 2, 2)]
+		[DataRow("\n\n(s)\n\n", 1, "s", 3, 2)]
+		[DataRow("\n\nsymbol", 0, "symbol", 3, 1)]
+		public void Tokeniser_Location_Tests(string code, int element, string value, int line, int col)
+		{
+			var tokeniser = new Tokeniser();
+			var enumerator = tokeniser.Tokenise(code);
+			var token = enumerator.Tokens[element];
+			Assert.AreEqual(value, token.Value, "value");
+			Assert.AreEqual(line, token.Line, "line");
+			Assert.AreEqual(col, token.Column, "column");
+		}
+
+		[DataTestMethod]
+		[DataRow(" (+ 1 3)", "(+ 1 3)")]
+		[DataRow("(+ 1 3) ", "(+ 1 3)")]
+		[DataRow("(+ 1 3 )", "(+ 1 3)")]
+		public void Whitespace_Tests(string code, string result)
+		{
+			var read = new Reader().Read(code).First();
+			Assert.AreEqual(result, read.Stringify());
+		}
+
+
+		[DataTestMethod]
+		[DataRow("System.Linq.Enumerable/TakeWhile<System.Object>", "(+ 1 3)")]
+		// [DataRow("(interop 'System.Linq.Enumerable/TakeWhile<System.Object>(IEnumerable<object>,Func<object,bool>)')", "(+ 1 3)")]
+		public void Tokeniser_Tests(string code, string result)
+		{
+			var read = new Tokeniser().Tokenise(code);
 			Assert.AreEqual(result, read.Stringify());
 		}
 

@@ -16,7 +16,7 @@ namespace Lisp.Compiler
             this.variadicImplementation = variadicImplementation;
         }
 
-        // Invokes the multi arity function. 
+        // Invoke the multi arity function. 
         // If we find an exact arity match, use it. If not, use the variadic implementation if it exists,
         // allowing it to validate any argument constraints
         public object Invoke(object[] args)

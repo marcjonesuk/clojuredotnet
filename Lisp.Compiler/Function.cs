@@ -27,4 +27,30 @@ namespace Lisp.Compiler
 
         public override string ToString() => $"{Name}";
     }
+	
+	public class InteropFunction : IFn
+    {
+        public string Name { get; }
+        public Func<object[], object> fn;
+
+        public InteropFunction(Func<object[], object> fn, string name = null)
+        {
+            this.fn = fn;
+            Name = name;
+        }
+
+        public object Invoke(object[] args)
+        {
+            try
+            {
+                return fn(args);
+            }
+            catch (Exception e)
+            {
+                throw e.Wrap(this);
+            }
+        }
+
+        public override string ToString() => $"{Name}";
+    }
 }

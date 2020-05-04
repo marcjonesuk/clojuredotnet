@@ -34,11 +34,11 @@ namespace Lisp.Compiler.Tests
 			}
 		}
 		
-		[DataTestMethod]
-		[DataRow("(get ['abc' false 99] 0)", "abc")]
-		[DataRow("(get ['abc' false 99] 1)", false)]
-		[DataRow("(get ['abc' false 99] 14)", null)]
+		// [DataTestMethod]
+		// [DataRow("(get ['abc' false 99] 0)", "abc")]
+		// [DataRow("(get ['abc' false 99] 1)", false)]
+		// [DataRow("(get ['abc' false 99] 14)", null)]
 
-		public void _Tests_1(string code, object expected) =>  Run_And_Compare(code, expected);
+		// public void _Tests_1(string code, object expected) =>  Run_And_Compare(code, expected);
 	}
 }

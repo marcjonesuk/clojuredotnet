@@ -1,4 +1,10 @@
-; calculates the factorial for n
+(defn add [x y] (+ x y))
+
+(defn test1 [a b exp] 
+	(deftest (str 'Adding two numbers together ' a ' + ' b ' = ' exp) 
+		(let [result (add a b)] (= exp result))
+))
+
 (defn fact [n] 
 	(loop [current n next (dec current) total 1] 
 		(if (> current 1) 
@@ -11,9 +17,6 @@
 	(deftest name 
 		(= expr expected)))
 
-(def data { :name "marc" :age 38 })
-
-; first tests
 (test "nil" 
 	(first nil) nil)
 
@@ -34,7 +37,7 @@
 
 (test "quoted list" 
 	(first `(1 2)) 1)
-  
+
 (test "string" 
 	(first "abc") "a")
 
@@ -43,16 +46,3 @@
 
 (test "range" 
 	(first (range)) 0)
-
-; more tests
-(test "x"
-	(next [1 2]) [2])
-
-
-
-(defn take2 [coll, count] 
-	(System.Linq.Enumerable/Take (seq x) count)
-)
-
-(print (take2 [1 2 3] 2))
-

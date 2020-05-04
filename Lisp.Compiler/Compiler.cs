@@ -37,8 +37,17 @@ namespace Lisp.Compiler
                 return new SymbolicExpression(items);
         }
 
-        // todo: add interop quoting?
-        // todo: need to add hashmap etc here now?
+		private object CompileArray(IList<object> expression, bool quoted)
+        {
+            var items = expression.Select(item => Compile(item, quoted)).ToList();
+            // if (quoted)
+            //     return new Function(_ => items.Select(item => item.Eval()).ToImmutableList(), items.Stringify());
+            // else
+            return items.ToImmutableArray();
+        }
+
+        // todo: add more quoting for other types?
+        // todo: need to add hashmap!!
         private object Compile(object o, bool quoted)
         {
             if (quoted)
@@ -56,6 +65,7 @@ namespace Lisp.Compiler
             {
                 return o switch
                 {
+					ImmutableArray<object> a => CompileArray(a, quoted),
                     IList<object> l => CompileList(l, quoted),
                     Symbol sym => sym,
                     Quoted q => Compile(q.Value, true),

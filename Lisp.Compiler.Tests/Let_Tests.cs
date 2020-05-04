@@ -30,14 +30,17 @@ namespace Lisp.Compiler.Tests
 		}
 		
 		[DataTestMethod]
-		[DataRow("(let [x 1] x)", 1)]
-		[DataRow("(let [x1 1]) x1", typeof(System.Exception))]
-		[DataRow("(let [y 1] (def z y)) z", 1)]
-		[DataRow("(let [a 1 b 2] (+ a b))", 3)]
-		[DataRow("(let [[g h] [1 2 3]] (* g h))", 2)]
-		[DataRow("(let [[g h i] [1 2]] i)", null)]
-		[DataRow("(let [a 1 b 2])", null)]
-		[DataRow("(let [a 1 b a] b)", 1)]
+		// [DataRow("(let [x 1] x)", 1)]
+		// [DataRow("(let [x1 1]) x1", typeof(System.Exception))]
+		// [DataRow("(let [y 1] (def z y)) z", 1)]
+		// [DataRow("(let [a 1 b 2] (+ a b))", 3)]
+		// [DataRow("(let [[g h] [1 2 3]] (* g h))", 2)]
+		// [DataRow("(let [[g h i] [1 2]] i)", null)]
+		// [DataRow("(let [a 1 b 2])", null)]
+		// [DataRow("(let [a 1 b a] b)", 1)]
+		// [DataRow("(let [x 5 result (+ 1 2)] (= 3 result))", true)]
+		// [DataRow("((fn [p] (let [result (+ p)] true)) 10)", true)]
+		[DataRow("(deftest '' false)", true)]
 		public void Let_Tests_1(string code, object expected) => Run_And_Compare(code, expected);
 	}
 }

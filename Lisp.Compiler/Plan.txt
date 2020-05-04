@@ -1,0 +1,27 @@
+
+
+
+
+
+
+
+
+Core language
+get
+Keywords as functions
+Binding function?
+Better interop - constructors etc., multimethods?
+
+
+Namespaces
+
+
+Unit testing plan
+Build system
+Common library
+
+
+Concepts
+First-class interop/C# support
+Fail-fast
+Immutability

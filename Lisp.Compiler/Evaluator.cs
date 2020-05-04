@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Lisp.Compiler
 {
-    public static class Evaluator
+	public static class Evaluator
     {
         public static object Eval(this object o, object[] args = null)
         {
