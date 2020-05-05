@@ -9,11 +9,6 @@ namespace Lisp.RunTime
 {
 	class Program
 	{
-
-
-
-
-
 		public static object Add(dynamic x, dynamic y)
 		{
 			// if (x is int xi && y is int yi)
