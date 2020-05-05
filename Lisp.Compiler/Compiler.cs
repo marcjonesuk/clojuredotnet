@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Lisp.Reader;
 
 namespace Lisp.Compiler
 {
@@ -14,7 +15,7 @@ namespace Lisp.Compiler
 
         public IFn Compile(string code)
         {
-            var expressions = new Reader().Read(code);
+            var expressions = new Rdr().Read(code);
             var compiled = expressions.Select(e => Compile(e, false)).ToList();
             foreach (var c in compiled)
             {
@@ -28,7 +29,7 @@ namespace Lisp.Compiler
             return new Program_(expressions.Select(e => Compile(e, false)).ToList());
         }
 
-        private object CompileList(IList<object> expression, bool quoted)
+        private object CompileList(IEnumerable<ReaderItem> expression, bool quoted)
         {
             var items = expression.Select(item => Compile(item, quoted)).ToList();
             if (quoted)
@@ -37,7 +38,7 @@ namespace Lisp.Compiler
                 return new SymbolicExpression(items);
         }
 
-		private object CompileArray(IList<object> expression, bool quoted)
+		private object CompileArray(IEnumerable<ReaderItem> expression, bool quoted)
         {
             var items = expression.Select(item => Compile(item, quoted)).ToList();
             // if (quoted)
@@ -54,7 +55,9 @@ namespace Lisp.Compiler
             {
                 return o switch
                 {
-                    IList<object> l => CompileList(l, quoted),
+					ReaderLiteral literal => literal.Value, 
+					ReaderVector vector => CompileArray(vector, quoted),
+                    ReaderList list => CompileList(list, quoted),
                     Symbol sym => new Function(_ => sym, $"symbol({sym.Name})"),
                     Quoted q => Compile(q.Value, true),
                     Unquoted q => Compile(q.Value, false),
@@ -65,9 +68,10 @@ namespace Lisp.Compiler
             {
                 return o switch
                 {
-					ImmutableArray<object> a => CompileArray(a, quoted),
-                    IList<object> l => CompileList(l, quoted),
-                    Symbol sym => sym,
+					ReaderLiteral literal => literal.Value, 
+					ReaderVector vector => CompileArray(vector, quoted),
+                    ReaderList list => CompileList(list, quoted),
+                    ReaderSymbol sym => new Symbol(sym.Name, false, sym.Token),
                     Quoted q => Compile(q.Value, true),
                     Unquoted q => Compile(q.Value, false),
                     _ => o

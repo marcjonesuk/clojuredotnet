@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Lisp.Reader
 {
-	public class Reader
+	public class Rdr
 	{
 		public string Load(string file) => File.ReadAllText(file).Replace("'", "`").Replace("\"", "'");
 

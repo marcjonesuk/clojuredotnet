@@ -1,4 +1,5 @@
 using System;
+using Lisp.Reader;
 
 namespace Lisp.Compiler
 {

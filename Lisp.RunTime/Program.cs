@@ -69,8 +69,8 @@ namespace Lisp.RunTime
 				Func<object[], object> f = args => Add(args[0], args[1]);
 				for (var i = 0; i < 1000000; i++)
 				{
-					// fn.Invoke();
-					runner(null);
+					fn.Invoke();
+					// runner(null);
 					// x += (int)f(new object[] { 10,20 });
 				}
 				sw.Stop();
