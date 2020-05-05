@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Lisp.Compiler
+namespace Lisp.Reader
 {
     public static class Helper
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Lisp.Compiler
+namespace Lisp.Reader
 {
 	public class Tokeniser
 	{

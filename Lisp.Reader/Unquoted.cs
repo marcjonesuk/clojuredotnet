@@ -1,6 +1,6 @@
 namespace Lisp.Compiler
 {
-	public class Unquoted : IStringify
+	public class Unquoted 
 	{
 		public object Value { get; }
 
@@ -9,6 +9,6 @@ namespace Lisp.Compiler
 			Value = value;
 		}
 		
-		public string Stringify(bool quoteStrings) => "~" + Value.Stringify();
+		public override string ToString() => "~" + Value.ToString();
 	}
 }

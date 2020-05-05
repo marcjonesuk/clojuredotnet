@@ -1,6 +1,6 @@
 namespace Lisp.Compiler
 {
-	public class Quoted : IStringify
+	public class Quoted
 	{
 		public object Value { get; }
 
@@ -8,7 +8,5 @@ namespace Lisp.Compiler
 		{
 			Value = value;
 		}
-
-		public string Stringify(bool quoteStrings) => "`" + Value.Stringify(quoteStrings);
 	}
 }

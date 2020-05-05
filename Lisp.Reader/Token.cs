@@ -1,8 +1,5 @@
-namespace Lisp.Compiler
+namespace Lisp.Reader
 {
-	// TODO
-	// Support strings with tabs etc.
-
 	public class Token
 	{
 		public string Value { get; }
