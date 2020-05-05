@@ -6,6 +6,14 @@ using System.Linq;
 
 namespace Lisp.Compiler
 {
+	public class BindingAttribute : Attribute
+	{
+		public BindingAttribute(string name)
+		{
+			
+		}
+	}
+
 	public delegate object InteropDelegate(object[] args);
 	public delegate object InteropDelegate0Arg();
 	public delegate object InteropDelegate1Arg(object arg);
@@ -83,7 +91,11 @@ namespace Lisp.Compiler
 		// public static object Add() => 0;
 		// public static object Add(dynamic x) => x;
 		// public static object Add(int x, int y) => x + y;
+		
+		[BindingAttribute("+")]
 		public static object Add(dynamic x, dynamic y) => x + y;
+		
+		[BindingAttribute("-")]
 		public static object Subtract(dynamic x, dynamic y) => x - y;
 		public static object Multiply(dynamic x, dynamic y) => x * y;
 		public static object Divide(dynamic x, dynamic y) => x / y;
