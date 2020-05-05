@@ -14,7 +14,7 @@ namespace Lisp.Compiler
 		public bool IsVariadic { get; private set; }
 		private Environment state;
 		private IFn bodyFn = null;
-		
+
 		public Fn(IEnumerable<Symbol> arguments, object body)
 		{
 			this.arguments = arguments.ToArray();
@@ -66,6 +66,24 @@ namespace Lisp.Compiler
 					&& !Environment.Root.Contains(sym.Name))
 					body = Environment.Current[sym.Name];
 			}
+
+			//	locals
+			body.DeepFind(o => o is Symbol sym
+				&& !sym.IsInterop
+				&& locals.Contains(sym),
+				o =>
+				{
+					var sym = (Symbol)o;
+					sym.LocalArgumentIndex = IndexOfArgument(sym);
+				}
+			);
+		}
+
+		private int IndexOfArgument(Symbol symbol)
+		{
+			for (var i = 0; i < arguments.Length; i++)
+				if (arguments[i].Equals(symbol)) return i;
+			throw new Exception($"Could not find local argument {symbol} in {arguments.Stringify()}");
 		}
 
 		private void BindArgumentValues(object[] args)
@@ -100,19 +118,24 @@ namespace Lisp.Compiler
 		{
 			ValidateArity(args.Length);
 			BindArgumentValues(args);
+
+			CallStack.PushFrame(args);
+
 			object result = null;
 			while (true)
 			{
-				if (bodyFn != null) 
+				if (bodyFn != null)
 					result = bodyFn.Invoke();
 				else
 					result = body.Eval();
-				
+
 				if (result is RecurSignal recur)
 					BindArgumentValues(recur.Args);
 				else
 					break;
 			}
+
+			CallStack.PopFrame(args.Length); // wont work for loops!!!
 			return result;
 		}
 

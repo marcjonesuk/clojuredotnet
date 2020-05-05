@@ -41,22 +41,24 @@ namespace Lisp.RunTime
 			compiler.Compile("(defn myfunc [a b] (+ a b))").Invoke();
 			var fn = compiler.Compile("(+ 10 20)");
 
-			while (true)
-			{
-				sw.Reset();
-				fn.Invoke();
-				sw.Start();
-				var x = 0;
-				Func<object[], object> f = args => Add(args[0], args[1]);
-				for (var i = 0; i < 1000000; i++)
-				{
-					fn.Invoke();
-					// x += (int)f(new object[] { 10,20 });
-				}
-				sw.Stop();
-				Console.WriteLine(sw.ElapsedMilliseconds);
-			}
+			Console.WriteLine(fn.Invoke());
+			Console.WriteLine(fn.Invoke());
 
+			// while (true)
+			// {
+			// 	sw.Reset();
+			// 	fn.Invoke();
+			// 	sw.Start();
+			// 	var x = 0;
+			// 	Func<object[], object> f = args => Add(args[0], args[1]);
+			// 	for (var i = 0; i < 1000000; i++)
+			// 	{
+			// 		fn.Invoke();
+			// 		// x += (int)f(new object[] { 10,20 });
+			// 	}
+			// 	sw.Stop();
+			// 	Console.WriteLine(sw.ElapsedMilliseconds);
+			// }
 		}
 	}
 }

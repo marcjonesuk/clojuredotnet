@@ -55,23 +55,23 @@ namespace Lisp.Compiler
 
 				if (Items == null || Items.Count == 0) return ImmutableArray<object>.Empty;
 
-				var fn = (IFn)arg0.Invoke();
+				var fn = Items[0].Eval();
 
 				if (_isSpecialForm)
 				{
 					// Special forms get arguments without evaluation
-					return fn.Invoke(_args);
+					return fn.Eval(_args);
 				}
 				else
 				{
 					if (_args == null)
-						return fn.Invoke();
+						return fn.Eval();
 
 					// Evaluate arguments and invoke
 					for (var i = 0; i < _args.Length; i++)
 						_args[i] = _args[i].Eval();
 
-					return fn.Invoke(_args);
+					return fn.Eval(_args);
 				}
 			}
 			catch (Exception e)
