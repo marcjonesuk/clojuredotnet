@@ -22,6 +22,7 @@ namespace Lisp.Compiler
 				_args = items.Skip(1).ToArray();
 
 			_isSpecialForm = (Items != null && Items.Count > 0 && Items[0] is Symbol && Environment.SpecialForms.Contains(((Symbol)Items[0]).Name));
+			arg0 = Items[0] as IFn;
 		}
 
 		public override string ToString() => "(" + string.Join(' ', Items.Select(item => item.Stringify())) + ")";
@@ -44,7 +45,7 @@ namespace Lisp.Compiler
 			}
 		}
 
-		private IFn cached = null;
+		private IFn arg0 = null;
 		public object Invoke(object[] args)
 		{
 			try
@@ -54,24 +55,23 @@ namespace Lisp.Compiler
 
 				if (Items == null || Items.Count == 0) return ImmutableArray<object>.Empty;
 
-				var fn = Items[0].Eval(null);
+				var fn = (IFn)arg0.Invoke();
 
 				if (_isSpecialForm)
 				{
 					// Special forms get arguments without evaluation
-					return fn.Eval(_args);
+					return fn.Invoke(_args);
 				}
 				else
 				{
 					if (_args == null)
-						return fn.Eval();
+						return fn.Invoke();
 
 					// Evaluate arguments and invoke
-					var evaled = new object[_args.Length];
 					for (var i = 0; i < _args.Length; i++)
-						evaled[i] = _args[i].Eval();
+						_args[i] = _args[i].Eval();
 
-					return fn.Eval(evaled);
+					return fn.Invoke(_args);
 				}
 			}
 			catch (Exception e)

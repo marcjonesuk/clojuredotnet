@@ -7,6 +7,6 @@ namespace Lisp.Compiler
 		public string[] GenericTypeParameters { get; set; }
 		public string[] ParameterTypes { get; set; }
 
-		public override string ToString() => TypeName + MethodName;
+		public override string ToString() => $"{TypeName}/{MethodName}";
 	}
 }

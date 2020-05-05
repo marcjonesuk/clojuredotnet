@@ -12,16 +12,9 @@ namespace Lisp.Compiler
 		private readonly Symbol[] arguments;
 		private object body;
 		public bool IsVariadic { get; private set; }
-
-		public Fn(object arguments, object body)
-		{
-			this.arguments = arguments.As<IEnumerable<object>>().Cast<Symbol>().ToArray();
-			this.body = body;
-			if (this.arguments.Length > 0 && this.arguments.Last().IsVariadic) IsVariadic = true;
-			// this.body.ValidateBodyVars(this.arguments.ToImmutableHashSet<Symbol>());
-			Close();
-		}
-
+		private Environment state;
+		private IFn bodyFn = null;
+		
 		public Fn(IEnumerable<Symbol> arguments, object body)
 		{
 			this.arguments = arguments.ToArray();
@@ -29,6 +22,8 @@ namespace Lisp.Compiler
 			if (this.arguments.Length > 0 && this.arguments.Last().IsVariadic) IsVariadic = true;
 			// this.body.ValidateBodyVars();
 			Close();
+			this.bodyFn = body as IFn;
+			this.state = (body is SymbolicExpression symbolicExpression) ? symbolicExpression.Env : Environment.Current;
 		}
 
 		public static implicit operator Func<object, bool>(Fn fn)
@@ -75,7 +70,6 @@ namespace Lisp.Compiler
 
 		private void BindArgumentValues(object[] args)
 		{
-			var state = (body is SymbolicExpression symbolicExpression) ? symbolicExpression.Env : Environment.Current;
 			object[] values = new object[arguments.Length];
 			for (var i = 0; i < arguments.Length; i++)
 			{
@@ -109,7 +103,11 @@ namespace Lisp.Compiler
 			object result = null;
 			while (true)
 			{
-				result = body.Eval();
+				if (bodyFn != null) 
+					result = bodyFn.Invoke();
+				else
+					result = body.Eval();
+				
 				if (result is RecurSignal recur)
 					BindArgumentValues(recur.Args);
 				else

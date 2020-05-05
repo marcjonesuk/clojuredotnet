@@ -41,7 +41,7 @@ namespace Lisp.Compiler
             if (args[argumentNamesIndex] is ImmutableArray<object> va)
             {
                 var body = (IFn)args[bodyIndex];
-                var fn = new Fn(va, body);
+                var fn = new Fn(va.Cast<Symbol>(), body);
                 Environment.Root[symbol] = fn;
                 return symbol;
             }
@@ -54,14 +54,14 @@ namespace Lisp.Compiler
                 {
                     var argBodyPair = arity.As<IEnumerable<object>>().ToList();
                     if (argBodyPair.Count != 2) throw new ArityException($"Invalid function definition {argBodyPair.Stringify()}", argBodyPair.Count);
-                    var fn = new Fn(argBodyPair[0], argBodyPair[1]);
+                    var fn = new Fn(((IEnumerable<object>)argBodyPair[0]).Cast<Symbol>(), argBodyPair[1]);
                     if (fn.IsVariadic)
                         variadic = fn;
                     else
                         implementations[argBodyPair[0].As<IList<object>>().Count] = fn;
                 }
                 Environment.Root[symbol] = new MultiArityFunction(implementations, variadic);
-                return null;
+                return symbol;
             }
         }
     }

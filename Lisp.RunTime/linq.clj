@@ -56,3 +56,7 @@
 
 (myprint "yoooo")
 
+(defn +_ [x y] (RT/Add x y))
+
+(print (+_ 10 20))
+

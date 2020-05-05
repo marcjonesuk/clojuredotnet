@@ -19,6 +19,7 @@ namespace Lisp.Compiler
 
 		public string GetCachingKey(object[] args)
 		{
+			if (args == null) return null;
 			string key = "";
 			for (var a = 0; a < args.Length; a++)
 				key += args[a].GetType();
@@ -32,6 +33,14 @@ namespace Lisp.Compiler
 				.SelectMany(a => a.GetTypes())
 				.Where(t => t.FullName == info.TypeName)
 				.SingleOrDefault();
+
+			if (type == null)
+			{
+				type = AppDomain.CurrentDomain.GetAssemblies()
+				.SelectMany(a => a.GetTypes())
+				.Where(t => t.Name == info.TypeName)
+				.SingleOrDefault();
+			}
 
 			if (type == null)
 				throw new InteropException($"Type '{info.TypeName}' cannot be found");
@@ -63,7 +72,11 @@ namespace Lisp.Compiler
 						return mi;
 					}
 				}
-				throw new Exception($"Unable to bind to interop method {info}");
+				var objArray = type.GetMethods().Where(mi => mi.Name == info.MethodName && mi.GetParameters().Length == 1 && mi.GetParameters()[0].ParameterType == typeof(object[])).ToArray();
+				if (objArray.Length > 0)
+					return objArray[0];	
+
+				throw new InteropException($"Could not find suitable method to bind to {info}");
 			}
 		}
 
@@ -101,6 +114,12 @@ namespace Lisp.Compiler
 			return new Function(args => d((dynamic)args[0]));
 		}
 
+		public static IFn DynamicizePassThrough(MethodInfo mi)
+		{
+			var d = (Func<object[], object>)Delegate.CreateDelegate(typeof(Func<object[], object>), null, mi);
+			return new Function(args => d(args));
+		}
+
 		public static IFn Dynamicize<TResult>(MethodInfo mi)
 		{
 			var d = (Func<TResult>)Delegate.CreateDelegate(typeof(Func<TResult>), null, mi);
@@ -133,6 +152,10 @@ namespace Lisp.Compiler
 				mi = mi.MakeGenericMethod(Type.GetType(generic[0]));
 
 			var parametersLength = mi.GetParameters().Length;
+
+			if (mi.ReturnType == typeof(object) && parametersLength == 1 && mi.GetParameters()[0].ParameterType == typeof(object[])) {
+				return DynamicizePassThrough(mi);
+			}
 
 			// Returns something
 			if (mi.ReturnType != typeof(void) && parametersLength <= 3)

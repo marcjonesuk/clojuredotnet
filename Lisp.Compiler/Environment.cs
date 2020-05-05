@@ -9,7 +9,7 @@ namespace Lisp.Compiler
 		public SymbolicExpression SymbolicExpression { get; set; }
 		public Environment Parent { get; set; }
 		public static HashSet<string> SpecialForms { get; set; }
-		public Dictionary<string, object> Bindings { get; set; }
+		public Dictionary<string, object> SymbolTable { get; set; }
 		public Dictionary<string, IFn> Macros { get; set; }
 		public static Environment Current = null;
 		public static Environment Root = new Environment();
@@ -28,14 +28,14 @@ namespace Lisp.Compiler
 
 		public Environment()
 		{
-			Bindings = new Dictionary<string, object>();
+			SymbolTable = new Dictionary<string, object>();
 			this["if"] = new If();
 			this["defn"] = new Defn();
 			this["fn"] = InteropCompiler.Create("RT/Fn");
 			this["let"] = new Let();
 			this["def"] = new Function(args => RT.Def(args[0], args[1]));
-			this["str"] = new Function(args => RT.Str(args)); // InteropCompiler.Create("RT/Str");
-			this["apply"] = InteropCompiler.Create("RT/Apply");
+			this["str"] = new Function(args => RT.Str(args)); 
+			this["apply"] = new Function(args => RT.Apply(args));
 			this["map"] = InteropCompiler.Create("RT/Map");
 			this["reduce"] = new Reduce();
 			this["interop"] = new InteropFn();
@@ -46,7 +46,7 @@ namespace Lisp.Compiler
 			if (parent == null) parent = Root;
 			SymbolicExpression = symbolicExpression;
 			Parent = parent;
-			Bindings = new Dictionary<string, object>();
+			SymbolTable = new Dictionary<string, object>();
 		}
 
 		private bool _bootstrapped = false;
@@ -81,22 +81,22 @@ namespace Lisp.Compiler
 			this["nil?"] = InteropCompiler.Create("RT/IsNil");
 
 			this["seq"] = InteropCompiler.Create("Seq/Seq_");
-			// this["first"] = InteropCompiler.Create("Seq/First");
-			// this["count"] = InteropCompiler.Create("Seq/Count");
-			// this["take"] = InteropCompiler.Create("Seq/Take");
-			// this["drop"] = InteropCompiler.Create("Seq/Drop");
-			// this["next"] = InteropCompiler.Create("Seq/Next");
-			// this["last"] = InteropCompiler.Create("Seq/Last");
-			// this["distinct"] = InteropCompiler.Create("Seq/Distinct");
-			// this["concat"] = InteropCompiler.Create("Seq/Concat");
-			// this["repeat"] = InteropCompiler.Create("Seq/Repeat");
-			// this["range"] = InteropCompiler.Create("Seq/Range");
+			this["first"] = InteropCompiler.Create("Seq/First");
+			this["count"] = InteropCompiler.Create("Seq/Count");
+			this["take"] = InteropCompiler.Create("Seq/Take");
+			this["drop"] = InteropCompiler.Create("Seq/Drop");
+			this["next"] = InteropCompiler.Create("Seq/Next");
+			this["last"] = InteropCompiler.Create("Seq/Last");
+			this["distinct"] = InteropCompiler.Create("Seq/Distinct");
+			this["concat"] = InteropCompiler.Create("Seq/Concat");
+			this["repeat"] = InteropCompiler.Create("Seq/Repeat");
+			this["range"] = InteropCompiler.Create("Seq/Range");
 
 			this["list"] = new Function(args => new List<object>((IEnumerable<object>)args).ToImmutableList());
 			// new Compiler().Compile("(def + (fn [& args] (reduce RT/Add args)))").Invoke();
-			new Compiler().Compile("(def + (fn [x y] (RT/Add x y)))").Invoke();
-			// this["fast+"] = new Function(args => RT.Add(args[0], args[1]));
-			this["_*"] = new Function(args => RT.Multiply(args[0], args[1]));
+			new Compiler().Compile("(defn + [x y] (RT/Add x y))").Invoke();
+			// this["+"] = new Function(args => RT.Add(args[0], args[1]));
+			// this["_*"] = new Function(args => RT.Multiply(args[0], args[1]));
 			// this["+"] = new Func<int, int, int>((a,b) => a + b);
 			new Compiler().Compile("(def * (fn [& args] (reduce _* args)))").Invoke();
 			// new Compiler().Compile("(defn concat ([coll] (Seq/Seq_ coll)) ([& args] (reduce Seq/Concat args)))").Invoke();
@@ -113,32 +113,32 @@ namespace Lisp.Compiler
 			get
 			{
 				var s = this;
-				if (Bindings.ContainsKey(symbol)) return Bindings[symbol];
+				if (SymbolTable.ContainsKey(symbol)) return SymbolTable[symbol];
 				while (s.Parent != null)
 				{
 					s = s.Parent;
-					if (s.Bindings.ContainsKey(symbol)) return s.Bindings[symbol];
+					if (s.SymbolTable.ContainsKey(symbol)) return s.SymbolTable[symbol];
 				}
 				throw new System.Exception($"Unable to resolve symbol: {symbol} in this context");
 			}
 			set
 			{
-				Bindings[symbol] = value;
+				SymbolTable[symbol] = value;
 			}
 		}
 
 		public bool Contains(string symbol)
 		{
 			var s = this;
-			if (Bindings.ContainsKey(symbol)) return true;
+			if (SymbolTable.ContainsKey(symbol)) return true;
 			while (s.Parent != null)
 			{
 				s = s.Parent;
-				if (s.Bindings.ContainsKey(symbol)) return true;
+				if (s.SymbolTable.ContainsKey(symbol)) return true;
 			}
 			return false;
 		}
 
-		public void Clear() => Bindings.Clear();
+		public void Clear() => SymbolTable.Clear();
 	}
 }
