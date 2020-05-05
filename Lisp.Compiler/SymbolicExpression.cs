@@ -46,7 +46,7 @@ namespace Lisp.Compiler
 		}
 
 		private IFn arg0 = null;
-		public object Invoke(object[] args)
+		public object Invoke(object[] _)
 		{
 			try
 			{
@@ -68,10 +68,11 @@ namespace Lisp.Compiler
 						return fn.Invoke();
 
 					// Evaluate arguments and invoke
+					var evaled = new object[_args.Length];
 					for (var i = 0; i < _args.Length; i++)
-						_args[i] = _args[i].Eval();
+						evaled[i] = _args[i].Eval();
 
-					return fn.Invoke(_args);
+					return fn.Invoke(evaled);
 				}
 			}
 			catch (Exception e)

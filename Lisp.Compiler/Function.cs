@@ -5,7 +5,8 @@ namespace Lisp.Compiler
     public class Function : IFn
     {
         public string Name { get; }
-        public Func<object[], object> fn;
+
+		public Func<object[], object> fn;
 
         public Function(Func<object[], object> fn, string name = null)
         {

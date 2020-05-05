@@ -96,8 +96,6 @@ namespace Lisp.Compiler
 			// new Compiler().Compile("(def + (fn [& args] (reduce RT/Add args)))").Invoke();
 			new Compiler().Compile("(defn + [x y] (RT/Add x y))").Invoke();
 			// this["+"] = new Function(args => RT.Add(args[0], args[1]));
-			// this["_*"] = new Function(args => RT.Multiply(args[0], args[1]));
-			// this["+"] = new Func<int, int, int>((a,b) => a + b);
 			new Compiler().Compile("(def * (fn [& args] (reduce _* args)))").Invoke();
 			// new Compiler().Compile("(defn concat ([coll] (Seq/Seq_ coll)) ([& args] (reduce Seq/Concat args)))").Invoke();
 
