@@ -3,12 +3,13 @@ using Lisp.Reader;
 
 namespace Lisp.Compiler
 {
-	public class Symbol : IFn, IStringify
+	public class Symbol : IExpression, IFn, IStringify
 	{
 		private Token Token { get; }
 		private object _interop;
 		public bool IsInterop { get; private set; }
 		public string Name { get; }
+		public IExpression Parent { get; set; }
 
 		public Symbol(string name, bool isVariadic, Token token)
 		{

@@ -6,20 +6,15 @@ using System.Linq;
 
 namespace Lisp.Compiler
 {
-	public interface ISymbolicExpression : IEnumerable<object>, IFn
+	public class ListExpression : IExpression, IEnumerable<object>, IFn
 	{
-
-	}
-
-	public class SymbolicExpression : IEnumerable<object>, IFn
-	{
-		public IList<object> Items { get; }
+		public IList<IExpression> Items { get; }
 		private IList<object> Args { get; }
 		public Environment Env { get; set; }
 		private bool _isSpecialForm;
 		private object[] _args;
 
-		public SymbolicExpression(IList<object> items)
+		public ListExpression(IList<IExpression> items)
 		{
 			Items = items;
 
@@ -32,8 +27,8 @@ namespace Lisp.Compiler
 
 		public override string ToString() => "(" + string.Join(' ', Items.Select(item => item.Stringify())) + ")";
 
-		private SymbolicExpression _parent;
-		public SymbolicExpression Parent
+		private IExpression _parent;
+		public IExpression Parent
 		{
 			set
 			{
@@ -41,12 +36,15 @@ namespace Lisp.Compiler
 				if (_parent == null)
 					Env = new Environment(this, null);
 				else
-					Env = new Environment(this, _parent.Env);
+					Env = new Environment(this, ((ListExpression)_parent).Env);
 
-				foreach (var i in Items.Where(i => i is SymbolicExpression sym).Cast<SymbolicExpression>())
+				foreach (var i in Items.Where(i => i is ListExpression sym).Cast<ListExpression>())
 				{
 					i.Parent = this;
 				}
+			}
+			get {
+				return _parent;
 			}
 		}
 

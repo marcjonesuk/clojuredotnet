@@ -18,7 +18,7 @@ namespace Lisp.Compiler
 					item.DeepFind(predicate, action);
 		}
 
-		public static ImmutableHashSet<Symbol> GetBindings(SymbolicExpression sexpr) {
+		public static ImmutableHashSet<Symbol> GetBindings(ListExpression sexpr) {
 			var sym = sexpr.Items[0] as Symbol;
 			if (sym == null) return null;
 			return sym.Name switch {
@@ -31,7 +31,7 @@ namespace Lisp.Compiler
 		public static ImmutableHashSet<Symbol> ValidateBodyVars(this object o, ImmutableHashSet<Symbol> knownArgs = null)
 		{
 			if (knownArgs == null) knownArgs = ImmutableHashSet<Symbol>.Empty;
-			if (o is SymbolicExpression sexpr) {
+			if (o is ListExpression sexpr) {
 				var bindings = GetBindings(sexpr);
 				knownArgs = knownArgs.Union(bindings);
 			}

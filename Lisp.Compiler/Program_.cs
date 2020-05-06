@@ -6,7 +6,7 @@ namespace Lisp.Compiler
 {
     public class Program_ : List<object>, IFn, IStringify
     {
-        public Program_(List<object> items) : base(items)
+        public Program_(List<IExpression> items) : base(items)
         {
         }
 

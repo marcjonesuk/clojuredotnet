@@ -14,7 +14,7 @@ namespace Lisp.Compiler
 
             if (!isMultiArityFunction)
             {
-                while (!(args[argumentNamesIndex] is ImmutableArray<object>))
+                while (!(args[argumentNamesIndex] is VectorExpression))
                     argumentNamesIndex++;
             }
             else
@@ -29,7 +29,7 @@ namespace Lisp.Compiler
 
         private bool IsMultiArityFunction(object[] args)
         {
-            return !args.Any(a => (a.GetType() == typeof(ImmutableArray<object>)));
+            return !args.Any(a => (a.GetType() == typeof(VectorExpression)));
         }
 
         public object Invoke(object[] args)
@@ -38,7 +38,7 @@ namespace Lisp.Compiler
             var isMultiArityFunction = IsMultiArityFunction(args);
             var (symbolIndex, argumentNamesIndex, bodyIndex) = GetIndexesFromArgs(isMultiArityFunction, args);
 
-            if (args[argumentNamesIndex] is ImmutableArray<object> va)
+            if (args[argumentNamesIndex] is VectorExpression va)
             {
                 var body = (IFn)args[bodyIndex];
                 var fn = new Fn(va.Cast<Symbol>(), body);

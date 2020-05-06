@@ -23,7 +23,7 @@ namespace Lisp.Compiler
 			// this.body.ValidateBodyVars();
 			Close();
 			this.bodyFn = body as IFn;
-			this.state = (body is SymbolicExpression symbolicExpression) ? symbolicExpression.Env : Environment.Current;
+			this.state = (body is ListExpression symbolicExpression) ? symbolicExpression.Env : Environment.Current;
 		}
 
 		public static implicit operator Func<object, bool>(Fn fn)
@@ -44,7 +44,7 @@ namespace Lisp.Compiler
 		private void Close()
 		{
 			var locals = this.arguments.ToHashSet();
-			if (body is SymbolicExpression symbolicExpression)
+			if (body is ListExpression symbolicExpression)
 			{
 				var state = symbolicExpression.Env;
 				body.DeepFind(o => o is Symbol sym

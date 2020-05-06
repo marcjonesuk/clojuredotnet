@@ -6,7 +6,7 @@ namespace Lisp.Compiler
 {
 	public class Environment
 	{
-		public SymbolicExpression SymbolicExpression { get; set; }
+		public ListExpression Expression { get; set; }
 		public Environment Parent { get; set; }
 		public static HashSet<string> SpecialForms { get; set; }
 		public Dictionary<string, object> SymbolTable { get; set; }
@@ -41,10 +41,10 @@ namespace Lisp.Compiler
 			this["interop"] = new InteropFn();
 		}
 
-		public Environment(SymbolicExpression symbolicExpression, Environment parent)
+		public Environment(ListExpression expression, Environment parent)
 		{
 			if (parent == null) parent = Root;
-			SymbolicExpression = symbolicExpression;
+			Expression = expression;
 			Parent = parent;
 			SymbolTable = new Dictionary<string, object>();
 		}

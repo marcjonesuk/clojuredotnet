@@ -85,8 +85,8 @@ namespace Lisp.Compiler
                     var symbol = ((Symbol)bindings[i]).Name;
 
 					// Nasty hack for where a let expression contains a symbolic expression
-					if (bindings[i + 1] is SymbolicExpression symbolicExpression)
-						symbolicExpression.Parent = Environment.Current.SymbolicExpression;
+					if (bindings[i + 1] is ListExpression symbolicExpression)
+						symbolicExpression.Parent = Environment.Current.Expression;
 
                     var value = bindings[i + 1].Eval();
                     Environment.Current[symbol] = value;

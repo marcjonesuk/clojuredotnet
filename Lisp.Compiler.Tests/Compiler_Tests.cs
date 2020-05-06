@@ -32,8 +32,8 @@ namespace Lisp.Compiler.Tests
 		// [DataRow("(fn [] (+ 1 y123))", typeof(System.Exception))] // use of undeclared variable
 		
 		[DataTestMethod]
-		// [DataRow("(+ 1 2)", 3)]
-		[DataRow("(def p (fn [x] x)) (p 10)", 3)]
+		[DataRow("(+ 1 2)", 3)]
+		// [DataRow("(def p (fn [x] x)) (p 10)", 3)]
 		public void Add_Tests(string code, object expected) =>  Run_And_Compare(code, expected);
 
 		[DataTestMethod]
