@@ -8,36 +8,12 @@ using System.Collections.Generic;
 namespace Lisp.RunTime
 {
 	class Program
-	{
-		public static object Add(dynamic x, dynamic y)
-		{
-			// if (x is int xi && y is int yi)
-			// 	return xi + yi;
-			// return (dynamic)x + (dynamic)y;
-			return x + y;
-		}
+	{		
+		public delegate object Fn(object[] args);
+
 
 		static void Main(string[] args)
 		{
-			Func<object[], object> arg1 = (object[] args) => 10;
-			Func<object[], object> arg2 = (object[] args) => 20;
-
-			Func<object[], object> add = (object[] args) => (dynamic)args[0] + (dynamic)args[1];
-
-
-			Func<object[], object> addGetter = (object[] args) => add;
-
-			Func<object[], object> sex = (object[] args) => addGetter(new object[] { arg1(null), arg2(null) });
-
-			List<Func<object[], object>> program = new List<Func<object[], object>>();
-			program.Add(sex);
-
-			Func<object[], object> runner = (object[] args) => {
-				foreach(var item in program)
-					item(null);
-				return null;
-			};
-
 			var test = new List<string>().Select(i => i);
 			if (args.Length > 0)
 			{
@@ -60,18 +36,32 @@ namespace Lisp.RunTime
 			compiler.Compile("(defn myfunc [a b] (+ a b))").Invoke();
 			var fn = compiler.Compile("(+ 10 20)");
 
+			Func<Fn, object, object> eval1 = (m, a) => m(new object[1] { a });
+			Func<Fn, object, object, object> eval2 = (m, a, b) => m(new object[2] { a, b });
+			Func<Fn, object, object, object, object> eval3 = (m, a, b, c) => m(new object[2] { a, b });
+			Func<object, Fn> wrap = (fn) => (Fn)(_ => fn);
+			var add = (Fn)(args => (dynamic)args[0] + (dynamic)args[1]);
+			var log = (Fn)(args => { Console.WriteLine((dynamic)args[0]); return null; });
+			var if_ = (Fn)(args =>
+			{
+				if ((bool)args[0])
+					return ((Fn)args[1])(null);
+				else
+					return ((Fn)args[2])(null);
+			});
+
 			while (true)
 			{
 				sw.Reset();
 				fn.Invoke();
 				sw.Start();
-				var x = 0;
-				Func<object[], object> f = args => Add(args[0], args[1]);
 				for (var i = 0; i < 1000000; i++)
 				{
-					fn.Invoke();
+					// fn.Invoke();
 					// runner(null);
 					// x += (int)f(new object[] { 10,20 });
+					var add2 = ((Fn)((args) => { var x = (dynamic)args[0]; var y = (dynamic)args[1]; return eval2(add, x, y); }));
+					eval2(add2, 10, 20);
 				}
 				sw.Stop();
 				Console.WriteLine(sw.ElapsedMilliseconds);

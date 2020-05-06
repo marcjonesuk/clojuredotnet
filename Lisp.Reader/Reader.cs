@@ -8,9 +8,9 @@ namespace Lisp.Reader
 	{
 		public string Load(string file) => File.ReadAllText(file).Replace("'", "`").Replace("\"", "'");
 
-		public IEnumerable<object> Read(string code) => Read(new Tokeniser().Tokenise(code));
+		public IEnumerable<ReaderItem> Read(string code) => Read(new Tokeniser().Tokenise(code));
 
-		private IEnumerable<object> Read(TokenEnumerator en)
+		private IEnumerable<ReaderItem> Read(TokenEnumerator en)
 		{
 			var statements = new List<ReaderItem>();
 			while (!en.IsEof)
