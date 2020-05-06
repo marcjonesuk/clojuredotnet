@@ -5,7 +5,6 @@ namespace Lisp.Reader
 {
     public static class Helper
     {
-
         /*
          * Returns true if this is a numeric value, which might be floating point
          * value, or an integer value.

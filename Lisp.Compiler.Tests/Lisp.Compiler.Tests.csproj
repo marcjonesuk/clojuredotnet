@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Lisp.Compiler\Lisp.Compiler.csproj" />
+    <ProjectReference Include="..\Lisp.Reader\Lisp.Reader.csproj" />
   </ItemGroup>
 
 </Project>

@@ -95,6 +95,8 @@ namespace Lisp.Compiler
 			this["list"] = new Function(args => new List<object>((IEnumerable<object>)args).ToImmutableList());
 			// new Compiler().Compile("(def + (fn [& args] (reduce RT/Add args)))").Invoke();
 			new Compiler().Compile("(defn + [x y] (RT/Add x y))").Invoke();
+			// this["+"] = InteropCompiler.Create("RT/Add");
+
 			// this["+"] = new Function(args => RT.Add(args[0], args[1]));
 			new Compiler().Compile("(def * (fn [& args] (reduce _* args)))").Invoke();
 			// new Compiler().Compile("(defn concat ([coll] (Seq/Seq_ coll)) ([& args] (reduce Seq/Concat args)))").Invoke();
@@ -111,11 +113,15 @@ namespace Lisp.Compiler
 			get
 			{
 				var s = this;
-				if (SymbolTable.ContainsKey(symbol)) return SymbolTable[symbol];
+
+				if (SymbolTable.TryGetValue(symbol, out var value))
+					return value;
+
 				while (s.Parent != null)
 				{
 					s = s.Parent;
-					if (s.SymbolTable.ContainsKey(symbol)) return s.SymbolTable[symbol];
+					if (s.SymbolTable.TryGetValue(symbol, out var v))
+						return v;
 				}
 				throw new System.Exception($"Unable to resolve symbol: {symbol} in this context");
 			}

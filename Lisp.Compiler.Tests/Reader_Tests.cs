@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Lisp.Reader;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Lisp.Compiler.Tests
@@ -22,7 +23,7 @@ namespace Lisp.Compiler.Tests
 		[DataRow("-3.14", -3.14)]
 		public void Number_Tests(string s, object expected)
 		{
-			var read = new Reader().Read(s).First();
+			var read = new Rdr().Read(s).First();
 			Assert.AreEqual(expected, read);
 		}
 
@@ -32,7 +33,7 @@ namespace Lisp.Compiler.Tests
 		[DataRow("nil", null)]
 		public void Special_Value_Tests(string s, object expected)
 		{
-			var read = new Reader().Read(s).First();
+			var read = new Rdr().Read(s).First();
 			Assert.AreEqual(expected, read);
 		}
 
@@ -49,13 +50,13 @@ namespace Lisp.Compiler.Tests
 		// [DataRow("(reduce RT/add '(1 2 3 4)", 10)]
 		public void List_Tests(string s, params object[] items)
 		{
-			var read = (IList<object>)(new Reader().Read(s).First());
+			var read = (IList<object>)(new Rdr().Read(s).First());
 			Assert.AreEqual(items.Length, read.Count);
 			for (var i = 0; i < items.Length; i++)
 				Assert.AreEqual(items[i], read[i]);
 
 			s = s.Replace("(", "[").Replace(")", "]");
-			read = (IList<object>)(new Reader().Read(s).First());
+			read = (IList<object>)(new Rdr().Read(s).First());
 			Assert.AreEqual(items.Length, read.Count);
 			for (var i = 0; i < items.Length; i++)
 				Assert.AreEqual(items[i], read[i]);
@@ -76,12 +77,12 @@ namespace Lisp.Compiler.Tests
 		[DataRow("(nil ())")]
 		public void List_Tests_2(string s)
 		{
-			var read = (IList<object>)(new Reader().Read(s).First());
+			var read = (IList<object>)(new Rdr().Read(s).First());
 			Assert.AreEqual(s, read.Stringify());
 			Assert.IsInstanceOfType(read, typeof(ImmutableList<object>));
 
 			s = s.Replace("(", "[").Replace(")", "]");
-			read = (IList<object>)(new Reader().Read(s).First());
+			read = (IList<object>)(new Rdr().Read(s).First());
 			Assert.AreEqual(s, read.Stringify());
 			Assert.IsInstanceOfType(read, typeof(ImmutableArray<object>));
 		}
@@ -100,7 +101,7 @@ namespace Lisp.Compiler.Tests
 		public void Set_Tests(string s, string expected = null)
 		{
 			if (expected == null) expected = s;
-			var read = (IEnumerable<object>)(new Reader().Read(s).First());
+			var read = (IEnumerable<object>)(new Rdr().Read(s).First());
 			Assert.AreEqual(expected, read.Stringify());
 			Assert.IsInstanceOfType(read, typeof(ImmutableHashSet<object>));
 		}
@@ -128,7 +129,7 @@ namespace Lisp.Compiler.Tests
 		[DataRow("([])")]
 		public void Stringify_Tests(string s)
 		{
-			var read = new Reader().Read(s).First();
+			var read = new Rdr().Read(s).First();
 			Assert.AreEqual(s, read.Stringify(true));
 		}
 
@@ -142,7 +143,7 @@ namespace Lisp.Compiler.Tests
 		[DataRow("_helloworld")]
 		public void Symbol_Tests(string s, bool expectedSymbol = true)
 		{
-			var read = (new Reader().Read(s).First());
+			var read = (new Rdr().Read(s).First());
 			if (expectedSymbol)
 			{
 				Assert.IsTrue(typeof(Symbol) == read.GetType());
@@ -161,7 +162,7 @@ namespace Lisp.Compiler.Tests
 		[DataRow("(deftest 'Adding two numbers together' (let [result (add 1 2) (= 3 result)))")]
 		public void String_Tests(string s)
 		{
-			var result = (new Reader().Read(s));
+			var result = (new Rdr().Read(s));
 			var read = (string)result.First();
 			Assert.AreEqual(s[1..^1], read);
 		}
@@ -170,7 +171,7 @@ namespace Lisp.Compiler.Tests
 		[DataRow("(#(+ 1 %) 5)", "((fn [%] (+ 1 %)) 5)")]
 		public void Anonymous_Function_Tests(string code, string result)
 		{
-			var read = new Reader().Read(code).First();
+			var read = new Rdr().Read(code).First();
 			Assert.AreEqual(result, read.Stringify());
 		}
 
@@ -199,7 +200,7 @@ namespace Lisp.Compiler.Tests
 		[DataRow("(+ 1 3 )", "(+ 1 3)")]
 		public void Whitespace_Tests(string code, string result)
 		{
-			var read = new Reader().Read(code).First();
+			var read = new Rdr().Read(code).First();
 			Assert.AreEqual(result, read.Stringify());
 		}
 
@@ -217,7 +218,7 @@ namespace Lisp.Compiler.Tests
 		public void Integration_Tests()
 		{
 			var s = "(defn add-new-paste 'Insert a new paste in the database, then return its UUID.' [store content] (let [uuid (.toString (java.util.UUID/randomUUID))] (swap! (:data store) assoc (keyword uuid) {:content content}) uuid))";
-			var read = (new Reader().Read(s).First());
+			var read = (new Rdr().Read(s).First());
 			Assert.AreEqual(s, read.Stringify());
 
 			// s = "(defn render-form 'Render a simple HTML form page.' [] (html5 [:head [:meta {:charset 'UTF-8'}]] [:body (form-to [:post '/'] (text-area {:cols 80 :rows 10} 'content') [:div] (submit-button 'Paste!'))]))";

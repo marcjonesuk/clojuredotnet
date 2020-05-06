@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Lisp.Compiler
 {
-    public class MultiArityFunction : IFn
+    public class MultiArityFn : IFn
     {
         private readonly Dictionary<int, object> implementations;
         private readonly object variadicImplementation;
 
-        public MultiArityFunction(Dictionary<int, object> implementations, object variadicImplementation = null)
+        public MultiArityFn(Dictionary<int, object> implementations, object variadicImplementation = null)
         {
             if (implementations == null) throw new ArgumentNullException("implementations");
             if (implementations.Count == 0) throw new ArgumentOutOfRangeException("implementations");
@@ -17,8 +17,7 @@ namespace Lisp.Compiler
         }
 
         // Invoke the multi arity function. 
-        // If we find an exact arity match, use it. If not, use the variadic implementation if it exists,
-        // allowing it to validate any argument constraints
+        // If we find an exact arity match, use it. If not, use the variadic implementation if it exists
         public object Invoke(object[] args)
         {
             if (implementations.TryGetValue(args.Length, out var impl))

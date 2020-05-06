@@ -60,7 +60,7 @@ namespace Lisp.Compiler
                     else
                         implementations[argBodyPair[0].As<IList<object>>().Count] = fn;
                 }
-                Environment.Root[symbol] = new MultiArityFunction(implementations, variadic);
+                Environment.Root[symbol] = new MultiArityFn(implementations, variadic);
                 return symbol;
             }
         }

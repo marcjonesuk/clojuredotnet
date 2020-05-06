@@ -59,6 +59,12 @@
 (defn +_ [x y] (RT/Add x y))
 
 (print (+_ 10 20))
-(print (+_ 10 30))
-(print (+_ 10 40))
 
+
+(print (+_ 10 30))
+
+
+(print (+_ (let [y 10] (+ 5 y)) 40))
+
+(def p (fn [x] x))
+(p 10)

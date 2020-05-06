@@ -13,7 +13,7 @@ namespace Lisp.Compiler
 		public Symbol(string name, bool isVariadic, Token token)
 		{
 			IsVariadic = isVariadic;
-			Token = token;
+			Token = token ?? new Token(null, 0, 0);
 			Name = name;
 
 			if (name.Contains("/")) IsInterop = true;
@@ -29,7 +29,7 @@ namespace Lisp.Compiler
 				}
 				catch
 				{
-					throw new System.Exception($"Unable to resolve symbol: {Name} in this context ({Token.Position})");
+					throw new System.Exception($"Unable to resolve symbol: {Name} in this context ({Token})");
 				}
 			}
 

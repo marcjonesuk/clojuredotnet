@@ -6,6 +6,11 @@ using System.Linq;
 
 namespace Lisp.Compiler
 {
+	public interface ISymbolicExpression : IEnumerable<object>, IFn
+	{
+
+	}
+
 	public class SymbolicExpression : IEnumerable<object>, IFn
 	{
 		public IList<object> Items { get; }
