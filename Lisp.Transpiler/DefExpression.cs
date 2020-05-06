@@ -33,8 +33,7 @@ namespace Lisp.Transpiler
 
 		public string Transpile()
 		{
-			Console.WriteLine("sdfsdf");
-			return $"var {symbol.Transpile()} = {value.Transpile()}";
+			return $"var {symbol.Transpile()} = {value.Transpile()};";
 		}
 	}
 }

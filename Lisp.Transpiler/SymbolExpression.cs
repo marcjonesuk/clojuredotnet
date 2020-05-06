@@ -29,8 +29,10 @@ namespace Lisp.Transpiler
 		public string Transpile()
 		{
 			var symbolMap = new Dictionary<string, string>();
+			symbolMap["if"] = "if_";
 			symbolMap["="] = "eq";
 			symbolMap["+"] = "add";
+			symbolMap["*"] = "mult";
 			symbolMap["-"] = "sub";
 			symbolMap[">"] = "gt";
 			symbolMap["<"] = "lt";

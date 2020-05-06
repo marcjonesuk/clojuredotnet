@@ -28,10 +28,10 @@ namespace Lisp.Transpiler
 		public string Transpile()
 		{
 			return Value switch {
-				bool b => b.ToString(),
+				null => "null", 
+				bool b => b.ToString().ToLower(),
 				string s => $"\"{s}\"",
-				object o => o.ToString(),
-				_ => throw new Exception()
+				object o => o.ToString()
 			};
 		}
 	}

@@ -7,7 +7,9 @@ namespace Lisp.Transpiler
 {
 	public class LetExpression : IExpression
 	{
-		private List<IExpression> arguments = new List<IExpression>();
+		private VectorExpression arguments;
+		private IExpression body;
+		private List<KeyValuePair<string, object>> values = new List<KeyValuePair<string, object>>();
 
 		public LetExpression()
 		{
@@ -16,18 +18,11 @@ namespace Lisp.Transpiler
 		public LetExpression(ReaderList list)
 		{
 			var children = list.Children.ToList();
-			var bindings = children[1].BuildExpressionTree();
-			if (!(bindings is VectorExpression)) throw new Exception("Expected vector expression");
-			var body = children[2].BuildExpressionTree();
-
+			arguments = (VectorExpression)children[1].BuildExpressionTree();
+			body = children[2].BuildExpressionTree();
 		}
 
 		public ReaderItem Source { get; }
-
-		public bool Build(ReaderItem item)
-		{
-			return (item is ReaderList list && list.First() is ReaderSymbol sym && sym.Name == "let");
-		}
 
 		public IExpression Create(ReaderItem item)
 		{
@@ -40,7 +35,15 @@ namespace Lisp.Transpiler
 
 		public string Transpile()
 		{
-			return "var ";
+			var vars = "";
+			for (var i = 0; i < arguments.Items.Count; i += 2)
+			{
+				var name = arguments.Items[i];
+				var value = arguments.Items[i+1];
+				vars += $" var {name.Transpile()} = {value.Transpile()};";
+			}
+
+			return $"((Fn)((_) => {{{vars} return {body.Transpile()}; }}))(null)";
 		}
 	}
 }

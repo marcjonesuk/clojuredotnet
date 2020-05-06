@@ -7,7 +7,12 @@ namespace Lisp.Transpiler
 {
 	public class RT
 	{
-		public static object Add(object x, object y) => (dynamic)x + (dynamic)y;
+		public static object Add(dynamic x, dynamic y) => x + y;
+		public static object Sub(dynamic x, dynamic y) => x - y;
+		public static object Mult(dynamic x, dynamic y) => x * y;
+
+		public static object Inc(dynamic x) => ++x;
+		public static object Dec(dynamic x) => --x;
 
 		public static Fn Print(object obj)
 		{
@@ -32,6 +37,14 @@ namespace Lisp.Transpiler
 				return branch1(null);
 			else
 				return null;
+		}
+
+		public static object If(object condition, Fn branch1, Fn branch2)
+		{
+			if (Truthy(condition))
+				return branch1(null);
+			else
+				return branch2(null);
 		}
 
 		public static object If(Fn condition, Fn branch1, Fn branch2)
@@ -84,16 +97,54 @@ namespace Lisp.Transpiler
 			throw new Exception();
 		}
 
+		public static object Reduce(object fn, IEnumerable<object> values)
+		{
+			var function = (Fn)fn;
+			object value = null;
+
+			// if (args.Length < 2 || args.Length > 3)
+			//     throw new ArityException(args.Length);
+
+			// if (args.Length == 1) {
+			// target = (IEnumerable<object>)args[1];
+			// }
+			// else if (args.Length == 2)
+			// {
+			//     value = args[1];
+			//     target = (IEnumerable<object>)args[2];
+			// }
+
+			bool hasItems = false;
+			foreach (var item in values)
+			{
+				hasItems = true;
+				if (value == null)
+				{
+					value = item;
+					continue;
+				}
+				value = function(new object[] { value, item });
+			}
+			// if (!hasItems)
+			// {
+			//     if (args.Length == 3)
+			//         return function.Eval(new object[] { value });
+			//     else
+			//         return function.Eval();
+			// }
+			return value;
+		}
+
 		public static bool Eq(object arg1, object arg2) => (dynamic)arg1 == (dynamic)arg2;
 		public static bool Gt(object arg1, object arg2) => (dynamic)arg1 > (dynamic)arg2;
 		public static bool Lt(object arg1, object arg2) => (dynamic)arg1 < (dynamic)arg2;
 		public static bool Gte(object arg1, object arg2) => (dynamic)arg1 >= (dynamic)arg2;
 		public static bool Lte(object arg1, object arg2) => (dynamic)arg1 <= (dynamic)arg2;
 
-		public static object Eval(Fn fn) => fn(null);
-		public static object Eval(Fn fn, object arg1) => fn(new object[] { arg1 });
-		public static object Eval(Fn fn, object arg1, object arg2) => fn(new object[] { arg1, arg2 });
-		public static object Eval(Fn fn, object arg1, object arg2, object arg3) => fn(new object[] { arg1, arg2, arg3 });
+		public static object Eval(object fn) => ((Fn)fn)(null);
+		public static object Eval(object fn, object arg1) => ((Fn)fn)(new object[] { arg1 });
+		public static object Eval(object fn, object arg1, object arg2) => ((Fn)fn)(new object[] { arg1, arg2 });
+		public static object Eval(object fn, object arg1, object arg2, object arg3) => ((Fn)fn)(new object[] { arg1, arg2, arg3 });
 
 		public static IEnumerable<object> Seq(object o)
 		{

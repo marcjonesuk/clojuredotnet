@@ -30,20 +30,27 @@ namespace Lisp.Transpiler
 		{
 			// var args = string.Join(",", Items.Skip(1).Select(item => item.Transpile())); return $"_ => {Items[0].Transpile()}({args})";
 			var args = string.Join(", ", Items.Skip(1).Select(i => i.Transpile()));
-			
+
 			var fn = Items[0].Transpile();
 
-			if (fn.Contains(".")) {
-				if (fn.StartsWith(".")) {
+			if (Items[0] is SymbolExpression && fn.StartsWith("RT") || fn.StartsWith("System"))
+			{
+				if (fn.StartsWith("."))
+				{
 					var interopArgs = string.Join(", ", Items.Skip(2).Select(i => i.Transpile()));
 					return $"{Items[1].Transpile()}{fn}({interopArgs})";
 				}
-				else {
+				else
+				{
 					return $"{fn}({args})";
 				}
 			}
-			else
-				return $"RT.Eval({fn}, {args})";
+			else {
+				if (args.Length == 0) 
+					return $"RT.Eval({fn})";
+				else
+					return $"RT.Eval({fn}, {args})";
+			}
 		}
 	}
 }

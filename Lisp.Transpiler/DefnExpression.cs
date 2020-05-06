@@ -47,6 +47,14 @@ namespace Lisp.Transpiler
 			}
 
 			return $"var {symbol.Transpile()} = ((Fn)((args) => {{{vars} return {body.Transpile()}; }}))";
+
+			// (args) => {
+				// args.Length switch {
+				//	1 => {},
+				//  2 => {},
+				//  _ => {}
+				// }
+			// }
 		}
 	}
 }
