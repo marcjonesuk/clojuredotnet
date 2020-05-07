@@ -12,7 +12,7 @@ namespace Lisp.Transpiler.Tests
 			var r = new Reader.Rdr();
 			var core = @"
 (defn print [v] (RT.Print (RT.Str v)))
-(defn str [x] (#RT.Str x))
+(defn str [x] (RT.Str x))
 (defn + [x y] (RT.Add x y))
 (defn * [x y] (RT.Mult x y))
 (defn = [x y] (RT.Eq x y))
@@ -25,7 +25,7 @@ namespace Lisp.Transpiler.Tests
 (defn conj [coll item] (RT.Conj coll item))
 (defn get [coll index] (RT.Get coll index))
 (defn reduce [fn values] (RT.Reduce fn values))
-(defn apply [fn values] (RT.Apply fn values))
+;(defn apply [fn values] (RT.Apply fn values))
 
 ";
 			var tree = r.Read(core + code);
@@ -194,6 +194,10 @@ namespace Lisp.Transpiler.Tests
 		[DataRow("(+ 1 2)", 3)]
 		public void Simple_Tests(string code, object expected) => Run_And_Compare(code, expected);
 
+		[DataTestMethod]
+		[DataRow("(loop [x 0] (+ 1 2))", 3)]
+		// [DataRow("(loop [x 0] (if (> x 5) 'done' (recur (inc x))))", 3)]
+		public void Loop_Tests(string code, object expected) => Run_And_Compare(code, expected);
 		// [DataTestMethod]
 		// // [Ignore] [DataRow("(true)", typeof(InvalidOperationException))]
 		// public void Symbolic_Expression_Tests(string code, object expected) => Run_And_Compare(code, expected);

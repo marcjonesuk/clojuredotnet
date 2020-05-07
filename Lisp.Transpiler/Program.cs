@@ -10,22 +10,15 @@ namespace Lisp.Transpiler
 	{
 	}
 
-	public delegate object Fn(object[] args);
+	public delegate object Fn(params object[] args);
+	public delegate object Iife();
 
 	class Program
 	{
 		static void Main(string[] args)
 		{
+			Console.WriteLine("Starting");
 			var reader = new Rdr();
-			Func<object, Fn> wrap = (fn) => (Fn)(_ => fn);
-			
-			var if_ = (Fn)(args =>
-			{
-				if ((bool)args[0])
-					return ((Fn)args[1])(null);
-				else
-					return ((Fn)args[2])(null);
-			});
 
 			var core = @"
 (defn print [v] (RT.Print (RT.Str v)))
@@ -49,9 +42,10 @@ namespace Lisp.Transpiler
 				core = core + code;
 			}
 
+			Console.WriteLine("Parsing...");
 			var read = reader.Read(core).ToList();
+			Console.WriteLine("Building expression tree...");
 			Console.WriteLine(read.Compile());
-			// Console.WriteLine(RT.Eval(((Fn)((args) => { var y1 = (dynamic)args[0]; return ((Fn)((args) => { return y1; })); })), 5)(null));
 		}
 	}
 }

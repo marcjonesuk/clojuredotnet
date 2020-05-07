@@ -42,7 +42,6 @@ namespace Lisp.Transpiler
 				var value = arguments.Items[i+1];
 				vars += $" var {name.Transpile()} = {value.Transpile()};";
 			}
-
 			return $"((Fn)((_) => {{{vars} return {body.Transpile()}; }}))(null)";
 		}
 	}

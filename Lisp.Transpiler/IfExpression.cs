@@ -29,10 +29,14 @@ namespace Lisp.Transpiler
 
 		public string Transpile()
 		{
-			var args = string.Join(", ", Items.Skip(2).Select(i => $"(Fn)(_ => {i.Transpile()})"));
-			var condition = Items[1].Transpile();
-			var eval = $"RT.If({condition}, {args})";
-			return eval;
+			// var args = string.Join(", ", Items.Skip(2).Select(i => $"(Fn)(_ => {i.Transpile()})"));
+			// var condition = Items[1].Transpile();
+			// var eval = $"RT.If({condition}, {args})";
+			// return eval;
+
+			var trueBranch = Items[1].Transpile();
+			var falseBranch = Items[1].Transpile();
+			return $"RT.Truthy({Items[1].Transpile()}) ? {Items[2].Transpile()} : {Items[3].Transpile()}";
 		}
 	}
 }

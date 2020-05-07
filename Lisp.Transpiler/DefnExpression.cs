@@ -10,7 +10,7 @@ namespace Lisp.Transpiler
 		private List<string> arguments = new List<string>();
 		private IExpression body;
 		private IExpression symbol;
-		public string[] Locals {get;}
+		public string[] Locals { get; }
 
 		public DefnExpression()
 		{
@@ -38,22 +38,20 @@ namespace Lisp.Transpiler
 
 		public string Transpile()
 		{
-			var locals = string.Join(", ", Locals);
 			var values = string.Join(", ", Enumerable.Range(0, Locals.Length).Select(l => $"args[{l}]"));
-
 			var vars = "";
-			for(var l = 0; l < Locals.Length; l++) {
+			for (var l = 0; l < Locals.Length; l++)
+			{
 				vars += $" var {Locals[l]} = (dynamic)args[{l}];";
 			}
-
 			return $"var {symbol.Transpile()} = ((Fn)((args) => {{{vars} return {body.Transpile()}; }}))";
 
 			// (args) => {
-				// args.Length switch {
-				//	1 => {},
-				//  2 => {},
-				//  _ => {}
-				// }
+			// args.Length switch {
+			//	1 => {},
+			//  2 => {},
+			//  _ => {}
+			// }
 			// }
 		}
 	}

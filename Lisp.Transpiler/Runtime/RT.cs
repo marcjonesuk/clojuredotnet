@@ -1,26 +1,35 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Lisp.Transpiler
 {
 	public class RT
 	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public static object Add(dynamic x, dynamic y) => x + y;
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public static object Sub(dynamic x, dynamic y) => x - y;
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public static object Mult(dynamic x, dynamic y) => x * y;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public static object Inc(dynamic x) => ++x;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public static object Dec(dynamic x) => --x;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public static Fn Print(object obj)
 		{
 			Console.WriteLine(obj);
 			return null;
 		}
 
-
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public static bool Truthy(object value)
 		{
 			return value switch
@@ -31,6 +40,7 @@ namespace Lisp.Transpiler
 			};
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public static object If(Fn condition, Fn branch1)
 		{
 			if (Truthy(condition(null)))
@@ -39,6 +49,7 @@ namespace Lisp.Transpiler
 				return null;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public static object If(object condition, Fn branch1, Fn branch2)
 		{
 			if (Truthy(condition))
@@ -47,6 +58,7 @@ namespace Lisp.Transpiler
 				return branch2(null);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public static object If(Fn condition, Fn branch1, Fn branch2)
 		{
 			if (Truthy(condition(null)))
@@ -114,10 +126,10 @@ namespace Lisp.Transpiler
 			//     target = (IEnumerable<object>)args[2];
 			// }
 
-			bool hasItems = false;
+			// bool hasItems = false;
 			foreach (var item in values)
 			{
-				hasItems = true;
+				// hasItems = true;
 				if (value == null)
 				{
 					value = item;
@@ -133,6 +145,16 @@ namespace Lisp.Transpiler
 			//         return function.Eval();
 			// }
 			return value;
+		}
+
+		public static object Time(Fn body)
+		{
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+			object result = body();
+			sw.Stop();
+			Print($"Time (ms): {sw.ElapsedMilliseconds}");
+			return result;
 		}
 
 		public static bool Eq(object arg1, object arg2) => (dynamic)arg1 == (dynamic)arg2;
@@ -154,4 +176,28 @@ namespace Lisp.Transpiler
 			return ((IEnumerable<object>)o).Select(i => i);
 		}
 	}
+
+	public struct RecurSignal
+	{
+		public RecurSignal(params object[] args)
+		{
+			Args = args;
+		}
+
+		public object[] Args { get; }
+	}
+
+	// public class Recur : Fn
+	// {
+	// 	public object Invoke()
+	// 	{
+	// 		throw new System.Exception();
+	// 	}
+
+	// 	public object Invoke(object[] args)
+	// 	{
+	// 		return new RecurSignal(args);
+	// 	}
+	// }
+
 }

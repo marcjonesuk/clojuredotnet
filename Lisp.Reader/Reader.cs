@@ -32,6 +32,7 @@ namespace Lisp.Reader
 				// 	en.MoveNext();
 				// 	return new Unquoted(ReadNext(en));
 				case " ":
+				case "\r":
 					en.MoveNext();
 					// if (en.IsEof)
 					// 	return null;
