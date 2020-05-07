@@ -18,30 +18,30 @@
 			(+ 10 20)
 			(recur (inc i) (+ 10 20))
 		)))
-; (time 
-; 	(loop [i 0 v 0] 
-; 		(if (> i 1000000) 
-; 			(+ 10 20)
-; 			(recur (inc i) (+ 10 20))
-; 		)))
-; (time 
-; 	(loop [i 0 v 0] 
-; 		(if (> i 1000000) 
-; 			(+ 10 20)
-; 			(recur (inc i) (+ 10 20))
-; 		)))
-; (time 
-; 	(loop [i 0 v 0] 
-; 		(if (> i 1000000) 
-; 			(+ 10 20)
-; 			(recur (inc i) (+ 10 20))
-; 		)))
-; (time 
-; 	(loop [i 0 v 0] 
-; 		(if (> i 1000000) 
-; 			(+ 10 20)
-; 			(recur (inc i) (+ 10 20))
-; 		)))
+(time 
+	(loop [i 0 v 0] 
+		(if (> i 1000000) 
+			(+ 10 20)
+			(recur (inc i) (+ 10 20))
+		)))
+(time 
+	(loop [i 0 v 0] 
+		(if (> i 1000000) 
+			(+ 10 20)
+			(recur (inc i) (+ 10 20))
+		)))
+(time 
+	(loop [i 0 v 0] 
+		(if (> i 1000000) 
+			(+ 10 20)
+			(recur (inc i) (+ 10 20))
+		)))
+(time 
+	(loop [i 0 v 0] 
+		(if (> i 1000000) 
+			(+ 10 20)
+			(recur (inc i) (+ 10 20))
+		)))
 
 (def hm { "key1" "value1" })
 
@@ -51,10 +51,13 @@
 (print (filter [1 2 3 4 5] (fn [x] (> x 4))))
 
 
+
+
 ; V0.1
 ; Hashmaps & keywords
 ; Math
 ; Multi-arity functions
+; Variadic functions
 ; Loops inside loops?
 ; Simple test library
 ; Apply

@@ -69,14 +69,11 @@ namespace Lisp.Transpiler
 					vars += $" var {arity.Locals[l]} = (dynamic)args[{l}];";
 				}
 				var body = $"((Fn)((a) => {{{vars} return {arity.Body.Transpile()}; }}))(args)";
+				// var body = $"{{{vars} return {arity.Body.Transpile()};".AsIife(); 
 				if (a == 0)
 					body = arity.Body.Transpile();
 				cases += $"{a} => {body},\n";
 			}
-
-			//  ((Fn)((args) => {{{vars} return {body.Transpile()}; }}))
-
-			// var cases = string.Join(",\n", arities.Keys.Select(a => $"{a} => { this.arities[a].Body.Transpile() }"));
 
 			var fn = $@"
 var {symbol.Transpile()} = ((Fn)((args) =>  
@@ -84,20 +81,8 @@ var {symbol.Transpile()} = ((Fn)((args) =>
 		{cases}
 		_ => throw new ArityException(args.Length)
 	}}))";
-			// 0 => { this.arities[0].Body.Transpile() },
-			// 		1 => null,
-			// 		_ => throw new ArityException(args.Length),
+			
 			return fn;
-			// ((Fn)((args) => {{{vars} return {body.Transpile()}; }}))";
-
-			// var code = $@"
-			// (args) => {
-			// args.Length switch {
-			// 	1 => {},
-			//  2 => {},
-			//  _ => {}
-			// }
-			// }"
 		}
 	}
 }

@@ -179,6 +179,8 @@ namespace Lisp.Transpiler
 		
 		public static object Type(object obj) => obj.GetType();
 
+		public static object Do(params object[] args) => args[^1];
+[]
 		public static bool Eq(object arg1, object arg2) => arg1.Equals(arg2);
 		public static bool Gt(object arg1, object arg2) => (dynamic)arg1 > (dynamic)arg2;
 		public static bool Lt(object arg1, object arg2) => (dynamic)arg1 < (dynamic)arg2;
