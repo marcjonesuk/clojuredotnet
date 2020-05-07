@@ -43,9 +43,11 @@ namespace Lisp.Transpiler
 			{
 				var name = arguments.Items[i];
 				var value = arguments.Items[i + 1];
-				vars += $"object {name.Transpile()} = {value.Transpile()};";
-				rebinds += $"{name.Transpile()} = recur_signal.Args[{i / 2}];";
+				vars += $"object {name.Transpile()} = {value.Transpile()}; ";
+				rebinds += $"{name.Transpile()} = recur_signal.Args[{i / 2}]; ";
 			}
+			vars += " /* loop init */";
+			rebinds += " /* loop rebind */";
 
 			var loop = $@"
 object loop_result = null;

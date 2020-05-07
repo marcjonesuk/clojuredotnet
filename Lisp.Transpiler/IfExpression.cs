@@ -9,9 +9,11 @@ namespace Lisp.Transpiler
 	{
 		public ReaderItem Source { get; }
 		public List<IExpression> Items { get; }
+		public bool UseConditionalOperator { get; }
 
-		public IfExpression()
+		public IfExpression(bool useConditionalOperator)
 		{
+			UseConditionalOperator = useConditionalOperator;
 		}
 
 		public IExpression Create(ReaderItem item)
@@ -29,14 +31,19 @@ namespace Lisp.Transpiler
 
 		public string Transpile()
 		{
-			// var args = string.Join(", ", Items.Skip(2).Select(i => $"(Fn)(_ => {i.Transpile()})"));
-			// var condition = Items[1].Transpile();
-			// var eval = $"RT.If({condition}, {args})";
-			// return eval;
-
-			var trueBranch = Items[1].Transpile();
-			var falseBranch = Items[1].Transpile();
-			return $"RT.Truthy({Items[1].Transpile()}) ? {Items[2].Transpile()} : {Items[3].Transpile()}";
+			if (UseConditionalOperator)
+			{
+				var trueBranch = Items[1].Transpile();
+				var falseBranch = Items[1].Transpile();
+				return $"RT.Truthy({Items[1].Transpile()}) ? {Items[2].Transpile()} : {Items[3].Transpile()}";
+			}
+			else
+			{
+				var args = string.Join(", ", Items.Skip(2).Select(i => $"(Fn)(_ => {i.Transpile()})"));
+				var condition = Items[1].Transpile();
+				var eval = $"RT.If({condition}, {args})";
+				return eval;
+			}
 		}
 	}
 }

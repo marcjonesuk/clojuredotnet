@@ -9,27 +9,27 @@ namespace Lisp.Transpiler
 {
 	public class RT
 	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static object Add(dynamic x, dynamic y) => x + y;
-		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static object Sub(dynamic x, dynamic y) => x - y;
-		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static object Mult(dynamic x, dynamic y) => x * y;
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static object Inc(dynamic x) => ++x;
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static object Dec(dynamic x) => --x;
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Fn Print(object obj)
 		{
 			Console.WriteLine(obj);
 			return null;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Truthy(object value)
 		{
 			return value switch
@@ -40,7 +40,7 @@ namespace Lisp.Transpiler
 			};
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static object If(Fn condition, Fn branch1)
 		{
 			if (Truthy(condition(null)))
@@ -49,7 +49,7 @@ namespace Lisp.Transpiler
 				return null;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static object If(object condition, Fn branch1, Fn branch2)
 		{
 			if (Truthy(condition))
@@ -58,7 +58,7 @@ namespace Lisp.Transpiler
 				return branch2(null);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static object If(Fn condition, Fn branch1, Fn branch2)
 		{
 			if (Truthy(condition(null)))
@@ -77,10 +77,11 @@ namespace Lisp.Transpiler
 			{
 				bool b => b.ToString(),
 				Vector vector => vector.ToString(),
+				HashMap hashMap => hashMap.ToString(),
+				// t, object> arr => "{" + string.Join(' ', arr.Select(item => item.Key.Stringify(quoteStrings) + " " + item.Value.Stringify(quoteStrings))) + "}",
 				IEnumerable<object> list => "(" + string.Join(' ', list.Select(item => Str(item, true))) + ")",
-				string strng => quoteStrings ? "'" + strng + "'" : strng,
+				string strng => quoteStrings ? "\"" + strng + "\"" : strng,
 				// IStringify str => str.Stringify(quoteStrings),
-				// ImmutableDictionary<object, object> arr => "{" + string.Join(' ', arr.Select(item => item.Key.Stringify(quoteStrings) + " " + item.Value.Stringify(quoteStrings))) + "}",
 				// ImmutableHashSet<object> arr => "#{" + string.Join(' ', arr.Select(item => item.Stringify(quoteStrings))) + "}",
 				// object[] array => "[" + string.Join(' ', array.Select(item => item.Stringify(quoteStrings))) + "]",
 				// ImmutableArray<object> arr => "[" + string.Join(' ', arr.Select(item => item.Stringify(quoteStrings))) + "]",
@@ -99,14 +100,33 @@ namespace Lisp.Transpiler
 			}
 			throw new Exception();
 		}
+		
+		public static Func<object, bool> Pred(Fn fn)
+		{
+			return (Func<object, bool>)((a) => (bool)fn(a));
+		}
 
 		public static object Get(object coll, object index)
 		{
-			if (coll is IList<object> list)
+			return coll switch
 			{
-				return list[(dynamic)index];
-			}
-			throw new Exception();
+				IList<object> list => list[(dynamic)index],
+				IDictionary<object, object> dict => dict[(dynamic)index],
+				_ => throw new Exception()
+			};
+		}
+		
+		public static object Count(object obj)
+		{
+			return obj switch
+			{
+				object[] array => array.Length,
+				string s => s.Length,
+				IList<object> list => list.Count,
+				IDictionary<object, object> dict => dict.Count,
+				IEnumerable<object> en => en.Count(),
+				_ => throw new Exception()
+			};
 		}
 
 		public static object Reduce(object fn, IEnumerable<object> values)
@@ -156,8 +176,10 @@ namespace Lisp.Transpiler
 			Print($"Time (ms): {sw.ElapsedMilliseconds}");
 			return result;
 		}
+		
+		public static object Type(object obj) => obj.GetType();
 
-		public static bool Eq(object arg1, object arg2) => (dynamic)arg1 == (dynamic)arg2;
+		public static bool Eq(object arg1, object arg2) => arg1.Equals(arg2);
 		public static bool Gt(object arg1, object arg2) => (dynamic)arg1 > (dynamic)arg2;
 		public static bool Lt(object arg1, object arg2) => (dynamic)arg1 < (dynamic)arg2;
 		public static bool Gte(object arg1, object arg2) => (dynamic)arg1 >= (dynamic)arg2;
@@ -177,7 +199,7 @@ namespace Lisp.Transpiler
 		}
 	}
 
-	public struct RecurSignal
+	public class RecurSignal
 	{
 		public RecurSignal(params object[] args)
 		{

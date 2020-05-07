@@ -3,6 +3,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Lisp.Transpiler.Tests
 {
+	 public class TestBase {
+        public void Run_And_Compare(string code, object expected)
+        {
+			var r = new Reader.Rdr();
+			var tree = r.Read(Transpiler.Core + code);
+			var c = Lisp.Transpiler.Transpiler.Execute(tree);
+			Assert.AreEqual(expected, c);
+        }
+	}
+
     [TestClass]
     public class UnitTest1
     {
@@ -10,26 +20,8 @@ namespace Lisp.Transpiler.Tests
         public void Run_And_Compare(string code, object expected)
         {
 			var r = new Reader.Rdr();
-			var core = @"
-(defn print [v] (RT.Print (RT.Str v)))
-(defn str [x] (RT.Str x))
-(defn + [x y] (RT.Add x y))
-(defn * [x y] (RT.Mult x y))
-(defn = [x y] (RT.Eq x y))
-(defn > [x y] (RT.Gt x y))
-(defn < [x y] (RT.Lt x y))
-(defn inc [x] (RT.Inc x))
-(defn dec [x] (RT.Dec x))
-(defn take [coll count] (System.Linq.Enumerable.Take (RT.Seq coll) count))
-(defn first [coll] (System.Linq.Enumerable.FirstOrDefault (RT.Seq coll)))
-(defn conj [coll item] (RT.Conj coll item))
-(defn get [coll index] (RT.Get coll index))
-(defn reduce [fn values] (RT.Reduce fn values))
-;(defn apply [fn values] (RT.Apply fn values))
-
-";
-			var tree = r.Read(core + code);
-			var c = Lisp.Transpiler.Compiler.Compile(tree);
+			var tree = r.Read(Transpiler.Core + code);
+			var c = Lisp.Transpiler.Transpiler.Execute(tree);
 			Assert.AreEqual(expected, c);
         }
 

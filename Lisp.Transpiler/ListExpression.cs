@@ -43,8 +43,9 @@ namespace Lisp.Transpiler
 					return $"{fn}({args})";
 				}
 			}
-			else {
-				if (args.Length == 0) 
+			else
+			{
+				if (args.Length == 0)
 					// return $"RT.Eval({fn})";
 					return $"{fn}()";
 				else

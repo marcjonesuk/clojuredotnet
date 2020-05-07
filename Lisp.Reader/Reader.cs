@@ -41,16 +41,16 @@ namespace Lisp.Reader
 					return ReadCollection(en, ")", (items) => new ReaderList(items));
 				case "[":
 					return ReadCollection(en, "]", (items) => new ReaderVector(items));
-				// case "{":
-				// 	return ReadCollection(en, "}", (items) => items.ToHashMap());
-				// case "#":
-				// 	en.MoveNext();
-				// 	switch (en.Current.Value)
-				// 	{
-				// 		case "(": return ReadAnonymousFunction(en);
-				// 		case "{": return ReadCollection(en, "}", (items) => items.ToImmutableHashSet(new CustomComparer()));
-				// 		default: throw new Exception();
-				// 	}
+				case "{":
+					return ReadCollection(en, "}", (items) => new ReaderHashMap(items));
+				case "#":
+					en.MoveNext();
+					switch (en.Current.Value)
+					{
+						// case "(": return ReadAnonymousFunction(en);
+						case "{": return ReadCollection(en, "}", (items) => new ReaderSet(items));
+						default: throw new Exception();
+					}
 				// case "&":
 				// 	return CompileVariadic(en);
 				case "'":
