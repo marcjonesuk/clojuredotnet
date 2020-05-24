@@ -8,8 +8,6 @@ on:
 
 jobs:
   build:
-    env: 
-      working-directory: Lisp.Transpiler
     runs-on: ubuntu-latest
 
     steps:
