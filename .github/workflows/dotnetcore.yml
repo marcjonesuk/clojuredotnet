@@ -22,8 +22,10 @@ jobs:
       run: pwd
     - name: Install dependencies
       run: dotnet restore
-      working-directory: Lisp.Transpiler
+      working-directory: Lisp.Compiler
     - name: Build
       run: dotnet build --configuration Release --no-restore
+      working-directory: Lisp.Compiler
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+      working-directory: Lisp.Compiler
