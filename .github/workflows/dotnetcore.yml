@@ -25,5 +25,5 @@ jobs:
       run: dotnet build --configuration Release --no-restore
       working-directory: Lisp.Compiler
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
-      working-directory: Lisp.Compiler
+      run: dotnet test --verbosity normal
+      working-directory: Lisp.Compiler.Tests
